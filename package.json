@@ -1,0 +1,17 @@
+{
+  "name": "cssj",
+  "version": "0.1.0",
+  "description": "fast style sheet",
+  "main": "./js/compiler.mjs",
+  "exports": "./js/compiler.mjs",
+  "type": "module",
+  "scripts": {
+    "init": "node -e \"import('./js/compiler.mjs').then(loaded=>loaded.default.init())\"",
+    "build": "node -e \"import('./js/compiler.mjs').then(loaded=>loaded.default.buildCSS())\""
+  },
+  "author": "Alex",
+  "license": "ISC",
+  "dependencies": {
+    "timelex": "^1.0.1"
+  }
+}
