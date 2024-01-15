@@ -45,9 +45,9 @@ export default class CssCompiler{
         as: { prop: 'align-self', unit:null, priority:5, isSetUnit:false },
         jc: { prop: 'justify-content', unit:null, priority:6, isSetUnit:false },
         ajc: { prop:['align-items', 'justify-content'], unit:null, priority:7, isSetUnit:false},
-        ["flex-grow"]: { prop: 'flex-grow', unit: '%', priority:8, isSetUnit:true, precision:0 },
-        ["flex-shrink"]: { prop: 'flex-shrink', unit: '%', priority:9, isSetUnit:true, precision:0 },
-        ["flex-basis"]: { prop: 'flex-basis', unit: '%', priority:10, isSetUnit:true, precision:0 },
+        basis: { prop: 'flex-basis', unit: '%', priority:8, isSetUnit:true, precision:0 },
+        grow: { prop: 'flex-grow', unit: '%', priority:9, isSetUnit:true, precision:0 },
+        shrink: { prop: 'flex-shrink', unit: '%', priority:10, isSetUnit:true, precision:0 },
         flex: { prop: 'flex', unit:null, priority:11, isSetUnit:true, precision:0 },
         order: { prop: 'order', unit:null, priority:12, isSetUnit:false },
         pos: { prop:'position', unit: null, priority:13, isSetUnit:false },
@@ -69,9 +69,9 @@ export default class CssCompiler{
         bwv: { prop: ['border-top-width', 'border-bottom-width'], unit:'px', priority:29, isSetUnit:true, precision:0 },
         bw: { prop: 'border-width', unit: 'px', priority:30, isSetUnit:true, precision:0 },
         bct: { prop: 'border-top-color', unit: 'color', priority:31, isSetUnit:false },
-        bcl: { prop: 'border-left-color', unit: 'color', priority:32, isSetUnit:false },
+        bcr: { prop: 'border-right-color', unit: 'color', priority:32, isSetUnit:false },
         bcb: { prop: 'border-bottom-color', unit: 'color', priority:33, isSetUnit:false },
-        bcr: { prop: 'border-right-color', unit: 'color', priority:34, isSetUnit:false },
+        bcl: { prop: 'border-left-color', unit: 'color', priority:34, isSetUnit:false },
         bch: { prop: ['border-left-color', 'border-right-color'], unit: 'color', priority:35, isSetUnit:false },
         bcv: { prop: ['border-top-color', 'border-bottom-color'], unit: 'color', priority:36, isSetUnit:false },
         bc: { prop: 'border-color', unit: 'color', priority:37, isSetUnit:false },
@@ -141,7 +141,7 @@ export default class CssCompiler{
     static #projectPath = path.normalize(process.cwd().split(/[\/\\]*node_modules/)[0]).replace(/\\/g, '/')
 
     static #standartRegClasses = [
-        /\s{1}(md|mdl|mdp)?-?(d)(-i)?(_[hfbdav]{1})?-(flex|block|grid|inline|inblock(:inline-block){0}|none|inherit|initial)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(d)(-i)?(_[hfbdav]{1})?-(flex|inflex(:inline-flex){0}|block|inblock(:inline-block){0}|grid|ingrid(:inline-grid){0}|table|rtable(:table-row){0}|inline|none|inherit|initial)\s{1}/g,
         /\s{1}(md|mdl|mdp)?-?(fxw)(-i)?(_[hfbdav]{1})?-(wrap|nowrap)\s{1}/g,
         /\s{1}(md|mdl|mdp)?-?(fd)(-i)?(_[hfbdav]{1})?-(row|rowrs(:row-reverse){0}|col(:column){0}|colrs(column-reverse){0}|inherit|initial)\s{1}/g,
         /\s{1}(md|mdl|mdp)?-?(ai|as|ajc)(-i)?(_[hfbdav])?-(start(:flex-start){0}|center|end(:flex-end){0}|stretch|inherit|initial)\s{1}/g,
@@ -157,17 +157,18 @@ export default class CssCompiler{
         /\s{1}(md|mdl|mdp)?-?(tds)(-i)?(_[hfbdav]{1})?-(solid|double|dotted|dashed|wavy)\s{1}/g,
         /\s{1}(md|mdl|mdp)?-?(ws)(-i)?(_[hfbdav]{1})?-(normal|pre|pwrap(:pre-wrap){0}|bspace(:break-spaces){0}|nowrap|inherit|initial)\s{1}/g,
         /\s{1}(md|mdl|mdp)?-?(wb)(-i)?(_[hfbdav]{1})?-(normal|abreak(:break-all){0}|keep(:keep-all){0}|wbreak(:break-word){0}|inherit|initial)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(flex|flex-basis|flex-grow|flex-shrink|order|h|minh|maxh|w|minw|maxw|bwt|bwr|bwb|bwl|bwh|bwv|bw|brad|op|fsz|lh)(-i)?(_[hfbdav]{1})?-(\d+(_\d+)?|auto|inherit|initial|unset|none)(px|pt|pc|cm|mm|q|in|em|rem|ex|ch|lh|rlh|vw|vw|vmn|vmx|vi|vb|svw|svh|lvw|lvh|dvw|dvh|pr)?\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(l|t|r|b|z|m|mh|mv|mt|mr|mb|ml|p|ph|pv|pt|pr|pb|pl)(-i)?(_[hfbdav]{1})?-(-?\d+(_\d+)?|auto|inherit|initial|unset|none)(px|pt|pc|cm|mm|q|in|em|rem|ex|ch|lh|rlh|vw|vw|vmn|vmx|vi|vb|svw|svh|lvw|lvh|dvw|dvh|pr)?\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(flex|basis|grow|shrink|h|minh|maxh|w|minw|maxw|bwt|bwr|bwb|bwl|bwh|bwv|bw|brad|op|fsz|lh)(-i)?(_[hfbdav]{1})?-(\d+(_\d+)?|auto|inherit|initial|unset|none)(px|pt|pc|cm|mm|q|in|em|rem|ex|ch|lh|rlh|vw|vw|vmn|vmx|vi|vb|svw|svh|lvw|lvh|dvw|dvh|pr)?\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(order|l|t|r|b|z|m|mh|mv|mt|mr|mb|ml|p|ph|pv|pt|pr|pb|pl)(-i)?(_[hfbdav]{1})?-(-?\d+(_\d+)?|auto|inherit|initial|unset|none)(px|pt|pc|cm|mm|q|in|em|rem|ex|ch|lh|rlh|vw|vw|vmn|vmx|vi|vb|svw|svh|lvw|lvh|dvw|dvh|pr)?\s{1}/g,
         /\s{1}(md|mdl|mdp)?-?(c|bgc|bct|bcl|bcb|bcr|bc|bch|bcv)(-i)?(_[hfbdav]{1})?-([a-f0-9]{6,8}|[a-z]+)\s{1}/g
     ]
 
     static #regClasses = [...this.#standartRegClasses]
 
     static #classPropsRegex = /class="([\w\s\-]+)"/g
-    static #cssSelectorRegex = /([\w\s\-\*\+>\@\(\)\[\]\.,#:"=']+)\{([^\{\}]+)\}/g
+    static #cssSelectorRegex = /([\w\s\-\*\+>\(\)\[\]\.,#:"='\^\$\~]+)\{([^\{\}]+)\}/g
     static #cssPropsRegex = /([\w\- ]+):([ \w\(\)\-\."'#%,]+);?/g
-    static #mediaRegex = /(@media[^\{\}]+)\{(([\w\s\-\*\+>\@\(\)\[\]\.,#:"=']+)\{([^\{\}]+)\})+\s+\}/g
+    static #atRulesRegex = /(@[^\{\}]+)\{/g
+    static #mediaRegex = /(@media[^\{\}]+)\{(([\w\s\-\*\+>\@\(\)\[\]\.,#:"='\^\$\~]+)\{([^\{\}]+)\})+[\s\w-]+\}/g
     static #isWatch=false
     static #cache = {}
     static #progressInterval
@@ -204,19 +205,13 @@ export default class CssCompiler{
         'none'
     ]
 
-    /**
-     * 
-     * @param {string} html 
-     */
     static #analyzeHttp(html){
         try{
             let matches = html.matchAll(this.#classPropsRegex)
             let allClasses = []
-            if(matches){
-                for(let match of matches){
+            if(matches)
+                for(let match of matches)
                     allClasses = [...allClasses, ...match[1].split(/\s+/)]
-                }
-            }
             return allClasses
         }catch(err){
             Logger.error('CssCompiler.analyzeHttp()', err)
@@ -265,6 +260,22 @@ export default class CssCompiler{
         }
     }
 
+    static #selectionAtRules(css){
+        let rules=[]
+        let matches = Array.from(css.matchAll(this.#atRulesRegex))
+        
+            for (let match of matches) {
+                //const mergeSelectors = `${match[1]}{\n${this.#mergeSameSelectors(Array.from(match[0].matchAll(this.#cssSelectorRegex)).map(m => m[0]).join(''), 1)}}\n`
+               
+            }
+     
+            rules = [rules, ...matches.map(m => m[0])]
+        
+        css = css.replace(this.#mediaRegex, '')
+
+        return {rules, css}
+    }
+
     static async #loading(start=true){
         let loadChars = '\|/—'
         let index = 0
@@ -282,10 +293,10 @@ export default class CssCompiler{
      
     static async buildCSS(){
         try{
-            Logger.init(path.join(this.#projectPath, '/fcss-log').replace(/\\/g, '/'))
             this.#loading()
             if(!(await this.#load()))
                 throw new Error('Не удалось инициализировать CssCompiler')
+            Logger.init(path.join(this.#projectPath, '/cssj-log').replace(/\\/g, '/'))
             let htmlPathes = this.#config?.HTML_PATHES?.length
                 ? this.#config?.HTML_PATHES
                 : [process.cwd()]
@@ -423,18 +434,9 @@ export default class CssCompiler{
                         allCss = allCss.replace(this.#mediaPrefixes[key].search,'')
                     }
                   
-                    matches = Array.from(allCss.matchAll(this.#mediaRegex))
-                
-                    if(this.#config.MERGE_SAME_SELECTORS){
-                        for (let match of matches) {
-                            const mergeSelectors = `${match[1]}{\n${this.#mergeSameSelectors(Array.from(match[0].matchAll(this.#cssSelectorRegex)).map(m=>m[0]).join(''), 1)}}\n`
-                            classes.media.push(mergeSelectors)
-                        }
-                    }else{
-                        classes.media = [...classes.media, ...matches.map(m=>m[0])]
-                    }
-
-                    allCss = allCss.replace(this.#mediaRegex,'')
+                    let resultRules = this.#selectionAtRules(allCss)
+                    allCss = resultRules.css
+                    classes.rules = resultRules.rules
                    
                     matches = Array.from(allCss.matchAll(this.#cssSelectorRegex))
                     if(this.#config.MERGE_SAME_SELECTORS){
@@ -507,7 +509,7 @@ export default class CssCompiler{
             propsStr=''
             for(let prop in newProps)
                 propsStr+=`\r\n\t${addT}${prop}: ${newProps[prop]};`
-            cleanCss += `${addT}${key}{${propsStr}\n${addT}}\n\n`
+            cleanCss += `${addT}${key.replace(',',',\n')}{${propsStr}\n${addT}}\n\n`
         } 
         return cleanCss
     }
@@ -545,7 +547,8 @@ export default class CssCompiler{
      * @param {string} cssClass 
      * @param {object} params 
      * @param {string|null} [params.unit] 
-     * @param {number} [params.priority] 
+     * @param {number} [params.priority]
+     * @param {number} [params.precision]  
      * @param {string} [params.rename] 
      */
     static #setClassProperty(cssClass, params){
@@ -564,13 +567,17 @@ export default class CssCompiler{
                 this.#listClasses[cssClass].priority = params.priority
                 result = true
             }
+            if(this.#listClasses[cssClass]?.precision && params?.precision && typeof params?.precision == 'number' && params?.precision >= 0){
+                this.#listClasses[cssClass].precision = params.precision
+                result = true
+            }
             if(typeof params?.rename == 'string'){
                 delete Object.assign(this.#listClasses, { [params.rename]: this.#listClasses[cssClass] })[cssClass]
-                let reg = new RegExp(`(/)(.*\\(.*\\)\\?\\(.*)\\|(${cssClass})\\|(.*)(/)`)//проверить
+                let reg = new RegExp(`^\\/([\\w\\W]+\\([\\w\\W]+\\|)(${cssClass})(\\|[\\w\\W]+\\)[\\w\\W]+)\\/g`)//проверить
                 for (let i = 0; i < this.#regClasses.length; i++) {
                     if (reg.test(this.#regClasses[i].toString())) {
                         let oldReg = this.#regClasses[i].toString()
-                        let newReg = new RegExp(oldReg.replace(reg, `$2${params.rename}$4`))
+                        let newReg = new RegExp(oldReg.replace(reg, `$1${params.rename}$3`),'g')
                         this.#regClasses[i] = newReg
                         break
                     }
