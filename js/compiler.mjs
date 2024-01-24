@@ -4,117 +4,170 @@ import path from 'path'
 import crypto from 'crypto'
 import Logger from './logger.mjs'
 import url from 'url'
+import child_process, { ChildProcess } from 'child_process'
 
 export default class CssCompiler{
 
     static #units = {
-        PX:'px',
-        PT:'pt',
-        PC:'pc',
-        CM:'cm',
-        MM:'mm',
-        Q:'Q',
-        IN:'in',
-        EM:'em',
-        EX:'ex',
-        REM:'rem',
-        CH:'ch',
-        LH:'lh',
-        RLH:'rlh',
-        VW:'vw',
-        VH:'vh',
-        VMN:'vmin',
-        VMX:'vmax',
-        VI:'vi',
-        VB:'vb',
-        SVW:'svw',
-        SVH:'svh',
-        LVW:'lvw',
-        LVH:'lvh',
-        DVW:'dvw',
-        DVH:'dvh',
-        PR:'%',
-        NULL:null
+        numeric:{
+            PX:{unit:'px', precision:0},
+            PT:{unit:'pt', precision:0},
+            PC:{unit:'pc', precision:0},
+            CM:{unit:'cm', precision:1},
+            MM:{unit:'mm', precision:0},
+            Q:{unit:'Q', precision:0},
+            IN:{unit:'in', precision:0},
+            EM:{unit:'em', precision:1},
+            EX:{unit:'ex', precision:1},
+            REM:{unit:'rem', precision:1},
+            CH:{unit:'ch', precision:0},
+            LH:{unit:'lh', precision:0},
+            RLH:{unit:'rlh', precision:0},
+            VW:{unit:'vw', precision:0},
+            VH:{unit:'vh', precision:0},
+            VMN:{unit:'vmin', precision:0},
+            VMX:{unit:'vmax', precision:0},
+            VI:{unit:'vi', precision:0},
+            VB:{unit:'vb', precision:0},
+            SVW:{unit:'svw', precision:0},
+            SVH:{unit:'svh', precision:0},
+            LVW:{unit:'lvw', precision:0},
+            LVH:{unit:'lvh', precision:0},
+            DVW:{unit:'dvw', precision:0},
+            DVH:{unit:'dvh', precision:0},
+            PR:{unit:'%', precision:0},
+            NONE:{unit:'', precision:1},
+        },
+        nonNumeric:{
+            NULL:{unit:null},
+            COLOR:{unit:'color'}
+        }
     }
 
     static #standartListClasses = {
-        d: { prop: 'display', unit:null, priority:1, isSetUnit:false },
-        fxw: { prop: 'flex-wrap', unit:null, priority:2, isSetUnit:false },
-        fd: { prop: 'flex-direction', unit:null, priority:3, isSetUnit:false },
-        ai: { prop: 'align-items', unit:null, priority:4, isSetUnit:false },
-        as: { prop: 'align-self', unit:null, priority:5, isSetUnit:false },
-        jc: { prop: 'justify-content', unit:null, priority:6, isSetUnit:false },
-        ajc: { prop:['align-items', 'justify-content'], unit:null, priority:7, isSetUnit:false},
-        basis: { prop: 'flex-basis', unit: '%', priority:8, isSetUnit:true, precision:0 },
-        grow: { prop: 'flex-grow', unit: '%', priority:9, isSetUnit:true, precision:0 },
-        shrink: { prop: 'flex-shrink', unit: '%', priority:10, isSetUnit:true, precision:0 },
-        flex: { prop: 'flex', unit:null, priority:11, isSetUnit:true, precision:0 },
-        order: { prop: 'order', unit:null, priority:12, isSetUnit:false },
-        pos: { prop:'position', unit: null, priority:13, isSetUnit:false },
-        ov: { prop:'overflow', unit:null, priority:14, isSetUnit:false },
-        ovx: { prop:'overflow-x', unit:null, priority:15, isSetUnit:false },
-        ovy: { prop:'overflow-y', unit:null, priority:16, isSetUnit:false },
-        bst: { prop: 'border-top-style', unit:null, priority:17, isSetUnit:false },
-        bsr: { prop: 'border-right-style', unit:null, priority:18, isSetUnit:false },
-        bsb: { prop: 'border-bottom-style', unit:null, priority:19, isSetUnit:false },
-        bsl: { prop: 'border-left-style', unit:null, priority:20, isSetUnit:false },
-        bsh: { prop: ['border-left-style', 'border-right-style'], unit:null, priority:21, isSetUnit:false },
-        bsv: { prop: ['border-top-style', 'border-bottom-style'], unit:null, priority:22, isSetUnit:false },
-        bs: { prop: 'border-style', unit:null, priority:23, isSetUnit:false },
-        bwt: { prop: 'border-top-width', unit:'px', priority:24, isSetUnit:true, precision:0 },
-        bwr: { prop: 'border-right-width', unit:'px', priority:25, isSetUnit:true, precision:0 },
-        bwb: { prop: 'border-bottom-width', unit:'px', priority:26, isSetUnit:true, precision:0 },
-        bwl: { prop: 'border-left-width', unit:'px', priority:27, isSetUnit:true, precision:0 },
-        bwh: { prop: ['border-left-width', 'border-right-width'], unit:'px', priority:28, isSetUnit:true, precision:0 },
-        bwv: { prop: ['border-top-width', 'border-bottom-width'], unit:'px', priority:29, isSetUnit:true, precision:0 },
-        bw: { prop: 'border-width', unit: 'px', priority:30, isSetUnit:true, precision:0 },
-        bct: { prop: 'border-top-color', unit: 'color', priority:31, isSetUnit:false },
-        bcr: { prop: 'border-right-color', unit: 'color', priority:32, isSetUnit:false },
-        bcb: { prop: 'border-bottom-color', unit: 'color', priority:33, isSetUnit:false },
-        bcl: { prop: 'border-left-color', unit: 'color', priority:34, isSetUnit:false },
-        bch: { prop: ['border-left-color', 'border-right-color'], unit: 'color', priority:35, isSetUnit:false },
-        bcv: { prop: ['border-top-color', 'border-bottom-color'], unit: 'color', priority:36, isSetUnit:false },
-        bc: { prop: 'border-color', unit: 'color', priority:37, isSetUnit:false },
-        brad: { prop: 'border-radius', unit: 'px', priority:38, isSetUnit:true, precision:0 },
-        h: { prop: 'height', unit:'%', priority:39, isSetUnit:true, precision:0 },
-        minh: { prop: 'min-height', unit:'%', priority:40, isSetUnit:true, precision:0 },
-        maxh: { prop: 'max-height', unit:'%', priority:41, isSetUnit:true, precision:0 },
-        w: { prop: 'max-height', unit:'%', priority:42, isSetUnit:true, precision:0 },
-        minw: { prop: 'min-width', unit:'%', priority:43, isSetUnit:true, precision:0 },
-        maxw: { prop: 'max-width', unit:'%', priority:44, isSetUnit:true, precision:0 },
-        op: { prop: 'opacity', unit: null, priority:45, isSetUnit:false },
-        ff: { prop: 'font-family', unit: null, priority:46, isSetUnit:false},
-        fsz: { prop: 'font-size', unit: 'rem', priority:47, isSetUnit:true, precision:1 },
-        fw: { prop: 'font-weight', unit: null, priority:48, isSetUnit:false },
-        ta: { prop: 'text-align', unit: null, priority:49, isSetUnit:false },
-        tt: { prop:'text-transform', unit:null, priority:50, isSetUnit:false },
-        tdl: { prop: 'text-decoration-line', unit: null, priority:51, isSetUnit:false },
-        tds: { prop: 'text-decoration-style', unit: null, priority:52, isSetUnit:false },
-        ws: { prop:'white-space', unit: null, priority:53, isSetUnit:false },
-        wb: { prop:'word-break', unit: null, priority:54, isSetUnit:false },
-        lh: { prop: 'line-height', unit: null, priority:55, isSetUnit:true, precision:0 },
-        m: { prop: 'margin', unit: 'rem', priority:56, isSetUnit:true },
-        mh: { prop: ['margin-left', 'margin-right'], unit: 'rem', priority:57, isSetUnit:true, precision:1 },
-        mv: { prop: ['margin-top', 'margin-bottom'], unit: 'rem', priority:58, isSetUnit:true, precision:1 },
-        mt: { prop: 'margin-top', unit: 'rem', priority:59, isSetUnit:true, precision:1 },
-        ml: { prop: 'margin-left', unit: 'rem', priority:60, isSetUnit:true, precision:1 },
-        mb: { prop: 'margin-bottom', unit: 'rem', priority:61, isSetUnit:true, precision:1 },
-        mr: { prop: 'margin-right', unit: 'rem', priority:62, isSetUnit:true, precision:1 },
-        p: { prop: 'padding', unit: 'rem', priority:63, isSetUnit:true, precision:1 },
-        ph: { prop: ['padding-left', 'padding-right'], unit: 'rem', priority:64, isSetUnit:true, precision:1 },
-        pv: { prop: ['padding-top', 'padding-bottom'], unit: 'rem', priority:65, isSetUnit:true, precision:1 },
-        pt: { prop: 'margin-top', unit: 'rem', priority:66, isSetUnit:true, precision:1 },
-        pl: { prop: 'padding-left', unit: 'rem', priority:67, isSetUnit:true, precision:1 },
-        pb: { prop: 'padding-bottom', unit: 'rem', priority:68, isSetUnit:true, precision:1 },
-        pr: { prop: 'padding-right', unit: 'rem', priority:69, isSetUnit:true, precision:1 },
-        t: { prop: 'top', unit:'rem', priority:70, isSetUnit:true, precision:1 },
-        l: { prop: 'left', unit:'rem', priority:71, isSetUnit:true, precision:1 },
-        b: { prop: 'bottom', unit:'rem', priority:72, isSetUnit:true, precision:1 },
-        r: { prop: 'right', unit:'rem', priority:73, isSetUnit:true, precision:1 },
-        z: { prop: 'z-index', unit: null, priority:74, isSetUnit:false } ,
-        c: { prop: 'color', unit: 'color', priority:75, isSetUnit:false },
-        bgc: { prop: 'background-color', unit: 'color', priority:76, isSetUnit:false },
+        d: { prop: 'display', unit:this.#units.nonNumeric.NULL, priority:1, isSetUnit:false },
+        fxw: { prop: 'flex-wrap', unit:this.#units.nonNumeric.NULL, priority:2, isSetUnit:false },
+        fd: { prop: 'flex-direction', unit:this.#units.nonNumeric.NULL, priority:3, isSetUnit:false },
+        ai: { prop: 'align-items', unit:this.#units.nonNumeric.NULL, priority:4, isSetUnit:false },
+        as: { prop: 'align-self', unit:this.#units.nonNumeric.NULL, priority:5, isSetUnit:false },
+        jc: { prop: 'justify-content', unit:this.#units.nonNumeric.NULL, priority:6, isSetUnit:false },
+        ajc: { prop:['align-items', 'justify-content'], unit:this.#units.nonNumeric.NULL, priority:7, isSetUnit:false},
+        basis: { prop: 'flex-basis', unit: this.#units.numeric.PR, priority:8, isSetUnit:true },
+        grow: { prop: 'flex-grow', unit: this.#units.numeric.PR, priority:9, isSetUnit:true },
+        shrink: { prop: 'flex-shrink', unit: this.#units.numeric.PR, priority:10, isSetUnit:true },
+        flex: { prop: 'flex', unit:this.#units.nonNumeric.NULL, priority:11, isSetUnit:true },
+        order: { prop: 'order', unit:this.#units.nonNumeric.NULL, priority:12, isSetUnit:false },
+        pos: { prop:'position', unit: this.#units.nonNumeric.NULL, priority:13, isSetUnit:false },
+        ov: { prop:'overflow', unit:this.#units.nonNumeric.NULL, priority:14, isSetUnit:false },
+        ovx: { prop:'overflow-x', unit:this.#units.nonNumeric.NULL, priority:15, isSetUnit:false },
+        ovy: { prop:'overflow-y', unit:this.#units.nonNumeric.NULL, priority:16, isSetUnit:false },
+        bst: { prop: 'border-top-style', unit:this.#units.nonNumeric.NULL, priority:17, isSetUnit:false },
+        bsr: { prop: 'border-right-style', unit:this.#units.nonNumeric.NULL, priority:18, isSetUnit:false },
+        bsb: { prop: 'border-bottom-style', unit:this.#units.nonNumeric.NULL, priority:19, isSetUnit:false },
+        bsl: { prop: 'border-left-style', unit:this.#units.nonNumeric.NULL, priority:20, isSetUnit:false },
+        bsh: { prop: ['border-left-style', 'border-right-style'], unit:this.#units.nonNumeric.NULL, priority:21, isSetUnit:false },
+        bsv: { prop: ['border-top-style', 'border-bottom-style'], unit:this.#units.nonNumeric.NULL, priority:22, isSetUnit:false },
+        bs: { prop: 'border-style', unit:this.#units.nonNumeric.NULL, priority:23, isSetUnit:false },
+        bwt: { prop: 'border-top-width', unit:this.#units.numeric.PX, priority:24, isSetUnit:true },
+        bwr: { prop: 'border-right-width', unit:this.#units.numeric.PX, priority:25, isSetUnit:true },
+        bwb: { prop: 'border-bottom-width', unit:this.#units.numeric.PX, priority:26, isSetUnit:true },
+        bwl: { prop: 'border-left-width', unit:this.#units.numeric.PX, priority:27, isSetUnit:true },
+        bwh: { prop: ['border-left-width', 'border-right-width'], unit:this.#units.numeric.PX, priority:28, isSetUnit:true},
+        bwv: { prop: ['border-top-width', 'border-bottom-width'], unit:this.#units.numeric.PX, priority:29, isSetUnit:true},
+        bw: { prop: 'border-width', unit: this.#units.numeric.PX, priority:30, isSetUnit:true},
+        bct: { prop: 'border-top-color', unit: this.#units.nonNumeric.COLOR, priority:31, isSetUnit:false },
+        bcr: { prop: 'border-right-color', unit: this.#units.nonNumeric.COLOR, priority:32, isSetUnit:false },
+        bcb: { prop: 'border-bottom-color', unit: this.#units.nonNumeric.COLOR, priority:33, isSetUnit:false },
+        bcl: { prop: 'border-left-color', unit: this.#units.nonNumeric.COLOR, priority:34, isSetUnit:false },
+        bch: { prop: ['border-left-color', 'border-right-color'], unit: this.#units.nonNumeric.COLOR, priority:35, isSetUnit:false },
+        bcv: { prop: ['border-top-color', 'border-bottom-color'], unit: this.#units.nonNumeric.COLOR, priority:36, isSetUnit:false },
+        bc: { prop: 'border-color', unit: this.#units.nonNumeric.COLOR, priority:37, isSetUnit:false },
+        brad: { prop: 'border-radius', unit: this.#units.numeric.PX, priority:38, isSetUnit:true},
+        h: { prop: 'height', unit:this.#units.numeric.PR, priority:39, isSetUnit:true},
+        minh: { prop: 'min-height', unit:this.#units.numeric.PR, priority:40, isSetUnit:true},
+        maxh: { prop: 'max-height', unit:this.#units.numeric.PR, priority:41, isSetUnit:true},
+        w: { prop: 'max-height', unit:this.#units.numeric.PR, priority:42, isSetUnit:true},
+        minw: { prop: 'min-width', unit:this.#units.numeric.PR, priority:43, isSetUnit:true},
+        maxw: { prop: 'max-width', unit:this.#units.numeric.PR, priority:44, isSetUnit:true},
+        op: { prop: 'opacity', unit: this.#units.numeric.NONE, priority:45, isSetUnit:false},
+        ff: { prop: 'font-family', unit: this.#units.nonNumeric.NULL, priority:46, isSetUnit:false},
+        fsz: { prop: 'font-size', unit: this.#units.numeric.REM, priority:47, isSetUnit:true},
+        fw: { prop: 'font-weight', unit: this.#units.nonNumeric.NULL, priority:48, isSetUnit:false },
+        ta: { prop: 'text-align', unit: this.#units.nonNumeric.NULL, priority:49, isSetUnit:false },
+        tt: { prop:'text-transform', unit:this.#units.nonNumeric.NULL, priority:50, isSetUnit:false },
+        tdl: { prop: 'text-decoration-line', unit: this.#units.nonNumeric.NULL, priority:51, isSetUnit:false },
+        tds: { prop: 'text-decoration-style', unit: this.#units.nonNumeric.NULL, priority:52, isSetUnit:false },
+        ws: { prop:'white-space', unit: this.#units.nonNumeric.NULL, priority:53, isSetUnit:false },
+        wb: { prop:'word-break', unit: this.#units.nonNumeric.NULL, priority:54, isSetUnit:false },
+        lh: { prop: 'line-height', unit: this.#units.numeric.NONE, priority:55, precision:0, isSetUnit:true},
+        m: { prop: 'margin', unit: this.#units.numeric.REM, priority:56, isSetUnit:true},
+        mh: { prop: ['margin-left', 'margin-right'], unit: this.#units.numeric.REM, priority:57, isSetUnit:true },
+        mv: { prop: ['margin-top', 'margin-bottom'], unit: this.#units.numeric.REM, priority:58, isSetUnit:true },
+        mt: { prop: 'margin-top', unit: this.#units.numeric.REM, priority:59, isSetUnit:true },
+        ml: { prop: 'margin-left', unit: this.#units.numeric.REM, priority:60, isSetUnit:true },
+        mb: { prop: 'margin-bottom', unit: this.#units.numeric.REM, priority:61, isSetUnit:true },
+        mr: { prop: 'margin-right', unit: this.#units.numeric.REM, priority:62, isSetUnit:true },
+        p: { prop: 'padding', unit: this.#units.numeric.REM, priority:63, isSetUnit:true },
+        ph: { prop: ['padding-left', 'padding-right'], unit: this.#units.numeric.REM, priority:64, isSetUnit:true },
+        pv: { prop: ['padding-top', 'padding-bottom'], unit: this.#units.numeric.REM, priority:65, isSetUnit:true },
+        pt: { prop: 'margin-top', unit: this.#units.numeric.REM, priority:66, isSetUnit:true },
+        pl: { prop: 'padding-left', unit: this.#units.numeric.REM, priority:67, isSetUnit:true },
+        pb: { prop: 'padding-bottom', unit: this.#units.numeric.REM, priority:68, isSetUnit:true },
+        pr: { prop: 'padding-right', unit: this.#units.numeric.REM, priority:69, isSetUnit:true },
+        t: { prop: 'top', unit: this.#units.numeric.REM, priority:70, isSetUnit:true },
+        l: { prop: 'left', unit:this.#units.numeric.REM, priority:71, isSetUnit:true },
+        b: { prop: 'bottom', unit:this.#units.numeric.REM, priority:72, isSetUnit:true },
+        r: { prop: 'right', unit:this.#units.numeric.REM, priority:73, isSetUnit:true },
+        z: { prop: 'z-index', unit: this.#units.numeric.NONE, priority:74, isSetUnit:false } ,
+        c: { prop: 'color', unit: this.#units.nonNumeric.COLOR, priority:75, isSetUnit:false },
+        bgc: { prop: 'background-color', unit: this.#units.nonNumeric.COLOR, priority:76, isSetUnit:false },
     }
+
+    static #atRulesList=[
+        {name:'@namespace', priority:-11, compare:'all'},
+        {name:'@import', priority:-10, compare:'all'},
+        {name:'@charset', priority:-9, compare:'all'},
+        {name:'@font-face', priority:-8, compare:/src:([ \w\(\)\-\.\\\/"'#%,]+);?/, replace:true},
+        {name:'@font-feature-values',priority:-7},
+        {name:'@character-variant', priority:-7, parent:'@font-feature-values'},
+        {name:'@styleset', priority:-7, parent:'@font-feature-values'},
+        {name:'@stylistic', priority:-7, parent:'@font-feature-values'},
+        {name:'@ornaments', priority:-7, parent:'@font-feature-values'},
+        {name:'@annotation', priority:-7, parent:'@font-feature-values'},
+        {name:'@swash', priority:-7, parent:'@font-feature-values'},
+        {name:'@font-palette-values', priority:-6},
+        {name:'@page', priority:-5},
+        {name:'@color-profile', priority:-4},
+        {name:'@container', priority:-3},
+        {name:'@property', priority:-2},
+        {name:'@starting-style',priority:-1},
+        {name:'@keyframes', priority:1, replace:true},
+        {name:'@counter-style', priority:2},
+        {name:'@supports', priority:3},
+        {name:'@scope', priority:4},
+        {name:'@layer', priority:5},
+        {name:'@media', priority:6}
+    ]
+   
+    static #atRulesCompare=[
+        { 
+            type:String, 
+            value:new String('all'), 
+            callback:(rule, originalCss, compare)=>originalCss.replace(/\s+/g, '')
+        },
+        { 
+            type:RegExp,
+            callback:(rule, originalCss, compare)=>{
+                let matches = originalCss.match(compare)
+                let result = ''
+                if(matches.length>1){
+                    for(let i = 1; i < matches.length; i++)
+                        result+=matches[i].replace(/\s+/,'')
+                }
+                return rule.replace(/\s+/,'')+result
+            } 
+        }
+    ]
 
     static #listClasses = JSON.parse(JSON.stringify(this.#standartListClasses))
 
@@ -133,12 +186,13 @@ export default class CssCompiler{
         SET_CLASSES: {
             // z: { rename:'z-index', unit:'em', priority:10 }
         },
-        MERGE_SAME_SELECTORS: false
+        MERGE_SAME_SELECTORS: false,
     }
 
     static #config
 
     static #projectPath = path.normalize(process.cwd().split(/[\/\\]*node_modules/)[0]).replace(/\\/g, '/')
+    static #modulePath = path.dirname(url.fileURLToPath(import.meta.url))
 
     static #standartRegClasses = [
         /\s{1}(md|mdl|mdp)?-?(d)(-i)?(_[hfbdav]{1})?-(flex|inflex(:inline-flex){0}|block|inblock(:inline-block){0}|grid|ingrid(:inline-grid){0}|table|rtable(:table-row){0}|inline|none|inherit|initial)\s{1}/g,
@@ -166,12 +220,12 @@ export default class CssCompiler{
 
     static #classPropsRegex = /class="([\w\s\-]+)"/g
     static #cssSelectorRegex = /([\w\s\-\*\+>\(\)\[\]\.,#:"='\^\$\~]+)\{([^\{\}]+)\}/g
-    static #cssPropsRegex = /([\w\- ]+):([ \w\(\)\-\."'#%,]+);?/g
-    static #atRulesRegex = /(@[^\{\}]+)\{/g
+    static #cssPropsRegex = /([\w\- ]+):([ \w\(\)\-\.\\\/"'#%,]+);?/g
+    static #allCssContructRegex = /((@)?[^@\{\}\;]+)(\{)|(@[^\{\}\;]+(;))/
     static #mediaRegex = /(@media[^\{\}]+)\{(([\w\s\-\*\+>\@\(\)\[\]\.,#:"='\^\$\~]+)\{([^\{\}]+)\})+[\s\w-]+\}/g
     static #isWatch=false
     static #cache = {}
-    static #progressInterval
+    static #loadingProcess
 
     static #mediaPrefixes={
         md: {
@@ -219,6 +273,57 @@ export default class CssCompiler{
         }
     }
 
+    static #analyzeCss(css, isInner = false) {
+        let rules = []
+        let props = css
+        while(CssCompiler.#allCssContructRegex.test(props)){
+            let matchRule = props.match(CssCompiler.#allCssContructRegex)
+            switch (matchRule[3] ?? matchRule[5]) {
+                case '{':
+                    let selectRules = props.slice(matchRule.index)
+                    let matches = Array.from(selectRules.matchAll(/[\{\}]/g))
+                    let lastIndex = 0, startIndex = -1, counter = 0
+                    for (let item of matches) {
+                        counter += item[0] == '{' ? 1 : -1
+                        startIndex = startIndex == -1 ? item.index + 1 : startIndex
+                        if (counter == 0) {
+                            lastIndex = item.index
+                            break
+                        }
+                    }
+                    selectRules = selectRules.slice(0, lastIndex + 1)
+                    props = props.replace(selectRules, '')
+                    let innerCss = selectRules.slice(startIndex, lastIndex)
+                    let rule = matchRule[1].replace(/\s+/g,' ').trim()
+                    if (CssCompiler.#allCssContructRegex.test(innerCss)) {
+                        let res = CssCompiler.#analyzeCss(innerCss, true)
+                        rules.push({ rule, original:selectRules.trim(), innerCss: res })
+                    } else {
+                        rules.push({ rule, original:selectRules.trim(), innerCss: innerCss })
+                    }
+                    break
+                case ';':
+                    props = props.replace(matchRule[4], '')
+                    rules.push(matchRule[4].trim())
+                    break
+            }
+        }
+        rules.sort((a,b)=>{
+            let ruleA = typeof a == 'object' ? a.rule : a
+            let ruleB = typeof b == 'object' ? b.rule : b
+            let setA = this.#atRulesList.find(el=>new RegExp(`^${el.name}`).test(ruleA))
+            let setB = this.#atRulesList.find(el=>new RegExp(`^${el.name}`).test(ruleB))
+            let priorityA = setA !== undefined ? setA.priority : 0
+            let priorityB = setB !== undefined ? setB.priority : 0
+            return priorityA-priorityB
+        })
+        if(/^\s+$/.test(props))
+            props=null
+        if(isInner)
+            return { rules, props }
+        return this.#config.MERGE_SAME_SELECTORS ? this.#mergeSameRules(rules) : this.#concatAllRules(rules)
+    }
+
     static #getFiles(pathStr, ext){
         try{
             let filePathes=[]
@@ -260,34 +365,22 @@ export default class CssCompiler{
         }
     }
 
-    static #selectionAtRules(css){
-        let rules=[]
-        let matches = Array.from(css.matchAll(this.#atRulesRegex))
-        
-            for (let match of matches) {
-                //const mergeSelectors = `${match[1]}{\n${this.#mergeSameSelectors(Array.from(match[0].matchAll(this.#cssSelectorRegex)).map(m => m[0]).join(''), 1)}}\n`
-               
-            }
-     
-            rules = [rules, ...matches.map(m => m[0])]
-        
-        css = css.replace(this.#mediaRegex, '')
-
-        return {rules, css}
-    }
-
-    static async #loading(start=true){
-        let loadChars = '\|/—'
-        let index = 0
-        if(start){
-            this.#progressInterval = setInterval(()=>{
-                process.stdout.cursorTo(0);
-                process.stdout.write(`...Building ${loadChars[index++]}`);
-                index = index>=loadChars.length ? 0 : index
-            },200)
-        }else{
-            process.stdout.clearLine(0);
-            clearInterval(this.#progressInterval)
+    static #loading(start=true){
+        try{
+            if(start && !this.#loadingProcess){
+                let pathLoading = path.resolve(this.#modulePath, './loading.mjs')
+                this.#loadingProcess = child_process.fork(pathLoading)
+                this.#loadingProcess.send(JSON.stringify({command:'loading', args:[true]}))
+            }else{
+                if(this.#loadingProcess instanceof ChildProcess){
+                    this.#loadingProcess.send(JSON.stringify({command:'loading', args:[false]}))
+                    this.#loadingProcess.kill()
+                    this.#loadingProcess = null
+                }
+            }  
+        }catch(err){
+            Logger.error('CssCompiler.loading()',err)
+            this.#loadingProcess = null
         }
     }
      
@@ -341,29 +434,32 @@ export default class CssCompiler{
                 classes[key] = []
             if (matches.length) {
                 matches.sort((aMatch, bMatch) => (this.#listClasses[aMatch[2]].priority + (aMatch[4] != '' ? 0.5 : 0)) - (this.#listClasses[bMatch[2]].priority + (bMatch[4] != '' ? 0.5 : 0)))
-                const unitKeys = Object.keys(this.#units).map(unit => unit.toLowerCase())
+                const unitKeys = Object.keys(this.#units.numeric).map(unit => unit.toLowerCase())
                 for (let match of matches) {
                     let cls = match[2]
                     if (this.#listClasses?.[cls]) {
                         const p = this.#listClasses[cls]
                         let value, important = /^-i$/.test(match[3]) ? ' !important' : ''
-                        if (p.unit == 'color')
+                        if (p.unit == this.#units.nonNumeric.COLOR)
                             value = /^[a-f0-9]{6,8}$/.test(match[5]) ? `#${match[5]}` : match[5]
-                        else if (p.unit == null)
+                        else if (Object.values(this.#units.nonNumeric).includes(p.unit))
                             value = keysRValues.includes(match[5]) ? replacedValues[match[5]] : match[5]
                         else {
-                            const unit = match?.[7] && unitKeys.includes(match[7]) ? this.#units[match[7].toUpperCase()] : p.unit
+                            if(match?.[7] && unitKeys.includes(match[7]) && !p.isSetUnit)
+                                continue
+                            const unit = match?.[7] && unitKeys.includes(match[7]) ? this.#units.numeric[match[7].toUpperCase()] : p.unit
+                            const precision = typeof p?.precision === 'number' ? p.precision : (typeof unit?.precision == 'number' ? unit.precision : 0)
                             if (this.#excludeValues.includes(match[5])) {
                                 value = match[5]
                             } else {
                                 if (/_/.test(match[5]))
-                                    value = `${match[5].replace('_', '.')}${unit}`
-                                else if (p?.precision) {
-                                    value = match[5].padStart(p.precision + 1, '0').split('')
-                                    value.splice(-p.precision, 0, '.')
-                                    value = `${value.join('')}${unit}`
+                                    value = `${match[5].replace('_', '.')}${unit.unit}`
+                                else if (precision) {
+                                    value = match[5].padStart(precision + 1, '0').split('')
+                                    value.splice(-precision, 0, '.')
+                                    value = `${value.join('')}${unit.unit}`
                                 } else
-                                    value = `${match[5]}${unit}`
+                                    value = `${match[5]}${unit.unit}`
                             }
                         }
                         const pseudoClass = match?.[4] ? this.#pseudoClassesList[match[4].replace(/_/g, '')] : ''
@@ -385,10 +481,15 @@ export default class CssCompiler{
             }
            
             let resultCSS=''
+            let standartCssPath = path.resolve(this.#modulePath, '../css/standart.css')
+            resultCSS = fs.readFileSync(standartCssPath, { encoding: 'utf-8' })
+            for (let key in classes) {
+                let reg = new RegExp(`---${key}---`)
+                resultCSS = resultCSS.replace(reg, classes[key].join(''))
+            }
+            resultCSS = resultCSS.replace(/---\w+---/g, '').replace(/[\n\r\v\f]+/g,'\n').replace(/[\n\r\v\f]+\s*[\n\r\v\f]+/g, '\n')
+
             if(this.#config?.CSS_PATHES?.length){
-                let standartCssPath = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '../css/template.css')
-                resultCSS = fs.readFileSync(standartCssPath, { encoding: 'utf-8' })
-                
                 const cssPathes = this.#config.CSS_PATHES
                 let allCssFilesObj = []
                 for (let cssPath of cssPathes) {
@@ -402,60 +503,22 @@ export default class CssCompiler{
                     allCssFilesObj.push(objPathes)
                 }
                 if (allCssFilesObj.length) {
-                    standartCssPath = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '../css/standart.css')
-                    let allCss = fs.readFileSync(standartCssPath, { encoding: 'utf-8' })
-                    for (let key in classes) {
-                        let reg = new RegExp(`---${key}---`)
-                        allCss = allCss.replace(reg, classes[key].join(''))
-                    }
-                    for (let key in classes)
-                        classes[key] = []
-                    
                     allCssFilesObj.sort((a,b)=>a.priority - b.priority).forEach(value=>allCssFiles = [...allCssFiles, ...value.pathes])
                     for (let file of allCssFiles) {
                         try {
-                            allCss += fs.readFileSync(file, { encoding: 'utf-8' })+'\n\n'
+                            resultCSS += fs.readFileSync(file, { encoding: 'utf-8' })+'\n\n'
                         } catch (err) {
                             Logger.error(`CssCompiler.buildCSS(): readFile[${file}]`, err)
                             continue
                         }
                     }
-
-                    for(let key in this.#mediaPrefixes){
-                        matches = Array.from(allCss.matchAll(this.#mediaPrefixes[key].search))
-                        for(let match of matches){
-                            let onlyMediaSelectors = Array.from(match[0].matchAll(this.#cssSelectorRegex))
-                            classes[key] = [...classes[key], ...onlyMediaSelectors.map(m=>m[0])]
-                        }
-                        if(this.#config.MERGE_SAME_SELECTORS){
-                            const mediaSelectors = this.#mergeSameSelectors(classes[key].join(''), 1)
-                            classes[key] = [mediaSelectors]
-                        }
-                        allCss = allCss.replace(this.#mediaPrefixes[key].search,'')
-                    }
-                  
-                    let resultRules = this.#selectionAtRules(allCss)
-                    allCss = resultRules.css
-                    classes.rules = resultRules.rules
-                   
-                    matches = Array.from(allCss.matchAll(this.#cssSelectorRegex))
-                    if(this.#config.MERGE_SAME_SELECTORS){
-                        const mergeSelectors = this.#mergeSameSelectors(matches.map(m=>m[0]).join(''))
-                        classes.standart.push(mergeSelectors)
-                    }else{
-                        classes.standart = [...classes.standart, ...matches.map(m=>m[0])]
-                    }
+                    resultCSS = this.#analyzeCss(resultCSS)
+                }else{
+                    Logger.warning('CssCompiler.buildCSS()', 'По указанным в CSS_PATHES путям не найдено CSS файлов')
                 }
-            }else{
-                let standartCssPath = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '../css/standart.css')
-                resultCSS = fs.readFileSync(standartCssPath, { encoding: 'utf-8' })
             }
             
-            for (let key in classes) {
-                let reg = new RegExp(`---${key}---`)
-                resultCSS = resultCSS.replace(reg, classes[key].join(''))
-            }
-            resultCSS = resultCSS.replace(/---\w+---/g, '').replace(/[\n\r\v\f]+/g,'\n').replace(/[\n\r\v\f]+\s*[\n\r\v\f]+/g, '\n')
+            
             let buildPath = path.isAbsolute(this.#config.BUILD_PATH) ? this.#config.BUILD_PATH : path.join(this.#projectPath, this.#config.BUILD_PATH).replace(/\\/g, '/')
             let dir = /\.\w+$/.test(buildPath) ? path.dirname(buildPath) : buildPath
             if(!fs.existsSync(dir))
@@ -472,7 +535,7 @@ export default class CssCompiler{
             }
             this.#loading(false)
             if(Logger.isDebug)
-                Logger.success('CssCompiler.buildCSS','BUILD SUCCESS!')
+                Logger.success('CssCompiler.buildCSS()','BUILD SUCCESS!')
             return true
         }catch(err){
             Logger.error('CssCompiler.buildCSS()', err)
@@ -481,37 +544,77 @@ export default class CssCompiler{
         }
     }
 
-    /**
-     * 
-     * @param {string} selectorsStr
-     * @param {number} addTab
-     */
-    static #mergeSameSelectors(selectorsStr, addTab=0){
+    static #mergeSameRules(rulesArr, addTab=0){
         let addT = '\t'.repeat(addTab)
-        let selectors = Array.from(selectorsStr.matchAll(this.#cssSelectorRegex))
-        let iterableMatchSelectors = selectors.map(m=>{m[1] = m[1].replace(/\s+/g,''); return m})
-
-        let duplicateSelectors = {}
-        for (let selector of iterableMatchSelectors) {
-            if (duplicateSelectors?.[selector[1]])
-                duplicateSelectors[selector[1]].push(selector)
+        let duplicateRules = {}, currentRule, currentKey, currentValue, settings, mergedCss = ''
+        for (let item of rulesArr) {
+            settings = item !== 'string' ? CssCompiler.#atRulesList.find(el => new RegExp(`^${el.name}`).test(item.rule)) : undefined
+            if(typeof item != 'string'){
+                currentKey = item.rule
+                if(settings?.compare){
+                    let compare = this.#atRulesCompare.find(el=>settings.compare instanceof el.type && (el?.value ? el.value==settings.compare : true))
+                    if(compare)
+                        currentKey = compare.callback(currentKey, item.original, settings.compare)
+                }
+            }else{
+                currentKey = item
+            }
+            currentRule = typeof item === 'string' ? item : item.rule
+            currentValue = typeof item === 'string' ? null : item.innerCss
+            if (duplicateRules?.[currentKey])
+                if(settings?.replace)
+                    duplicateRules[currentKey].values = [currentValue]
+                else 
+                    duplicateRules[currentKey].values.push(currentValue)
             else
-                duplicateSelectors[selector[1]] = [selector]
+                duplicateRules[currentKey] = currentValue === null ? null : { rule: currentRule, values: [currentValue] }
         }
+        for (let key in duplicateRules) {
+            if (Array.isArray(duplicateRules[key]?.values) && duplicateRules[key]?.values?.length) {
+                const isObj = duplicateRules[key].values.reduce((acc,cur)=> acc &&= typeof cur === 'object', true)
+                let resultProps='',newProps = {}, propsStr='',innerRules = ''
+                if(isObj){
+                    innerRules = CssCompiler.#mergeSameRules(duplicateRules[key].values.reduce((arr,el)=>arr = [...arr,...el.rules] ,[]), addTab+1)
+                    propsStr = duplicateRules[key].values.reduce((acc,el)=>acc += typeof el.props === 'string' ? el.props.replace(/[\r\n\t\v\s]+/g,' ') : '', '')
+                }else{
+                    propsStr = duplicateRules[key].values.map(prop=>prop.replace(/[\r\n\t\v\s]+/g,' ')).join('\n')
+                }
+                let props = Array.from(propsStr.matchAll(CssCompiler.#cssPropsRegex))
+                for(let prop of props)
+                    newProps[prop[1].trim()] = prop[2].trim()
+                for(let prop in newProps)
+                    resultProps+=`\r\n\t${addT}${prop}: ${newProps[prop]};`
+                mergedCss += (mergedCss.length ? '\n\n' : '') + `${addT}${duplicateRules[key].rule.replace(/,\s*/g,',\n')}{${resultProps}${innerRules.length ? '\n'+innerRules: ''}\n${addT}}`
+            } else if (duplicateRules[key] == null) {
+                mergedCss += (mergedCss.length ? '\n\n' : '')+`${addT}${key}`
+            }
+        }
+        return mergedCss
+    }
 
-        let cleanCss = ''
-        for(let key in duplicateSelectors){
-            let newProps = {}
-            let propsStr = duplicateSelectors[key].map(m=>m[2].replace(/[\r\n\t\v]+/g,' ')).join('\n')
-            let props = Array.from(propsStr.matchAll(this.#cssPropsRegex))
-            for(let prop of props)
-                newProps[prop[1].trim()] = prop[2].trim()
-            propsStr=''
-            for(let prop in newProps)
-                propsStr+=`\r\n\t${addT}${prop}: ${newProps[prop]};`
-            cleanCss += `${addT}${key.replace(',',',\n')}{${propsStr}\n${addT}}\n\n`
-        } 
-        return cleanCss
+    static #concatAllRules(rulesArr, addTab=0){
+        let concatCss = ''
+        let addT = '\t'.repeat(addTab)
+        for (let item of rulesArr) {
+            if(typeof item === 'object'){
+                let resultProps='',newProps = {}, propsStr='',innerRules = ''
+                if(typeof item?.innerCss === 'string'){
+                    propsStr = item.innerCss.replace(/[\r\n\t\v\s]+/g,' ')
+                }else{
+                    innerRules = CssCompiler.#concatAllRules(item.innerCss.rules, addTab+1)
+                    propsStr = typeof item.innerCss.props === 'string' ? item.innerCss.props.replace(/[\r\n\t\v\s]+/g,' ') : ''
+                }
+                let props = Array.from(propsStr.matchAll(CssCompiler.#cssPropsRegex))
+                for(let prop of props)
+                    newProps[prop[1].trim()] = prop[2].trim()
+                for(let prop in newProps)
+                    resultProps+=`\r\n\t${addT}${prop}: ${newProps[prop]};`
+                concatCss+=(concatCss.length ? '\n\n' : '') + `${addT}${item.rule.replace(/,\s*/g,',\n')}{${resultProps}${innerRules.length ? '\n'+innerRules: ''}\n${addT}}`
+            }else if(typeof item === 'string'){
+                concatCss += (concatCss.length ? '\n\n' : '')+`${addT}${item}`
+            }
+        }
+        return concatCss
     }
 
     static #runWatchFileChanges(filePathes){
