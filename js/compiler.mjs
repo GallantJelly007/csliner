@@ -186,6 +186,9 @@ export default class CssCompiler{
         SET_CLASSES: {
             // z: { rename:'z-index', unit:'em', priority:10 }
         },
+        SET_UNITS_PRECISION:{
+            // px:1
+        },
         MERGE_SAME_SELECTORS: false,
     }
 
@@ -220,7 +223,7 @@ export default class CssCompiler{
 
     static #classPropsRegex = /class="([\w\s\-]+)"/g
     static #cssSelectorRegex = /([\w\s\-\*\+>\(\)\[\]\.,#:"='\^\$\~]+)\{([^\{\}]+)\}/g
-    static #cssPropsRegex = /([\w\- ]+):([ \w\(\)\-\.\\\/"'#%,]+);?/g
+    static #cssPropsRegex = /([\w\- ]+):([ \w\(\)\-\.\\\/!"'#%,]+);?/g
     static #allCssContructRegex = /((@)?[^@\{\}\;]+)(\{)|(@[^\{\}\;]+(;))/
     static #mediaRegex = /(@media[^\{\}]+)\{(([\w\s\-\*\+>\@\(\)\[\]\.,#:"='\^\$\~]+)\{([^\{\}]+)\})+[\s\w-]+\}/g
     static #isWatch=false
@@ -428,8 +431,7 @@ export default class CssCompiler{
                 }
             const replacedValues = Object.fromEntries(arrReplacedValues)
             const keysRValues = Object.keys(replacedValues)
-
-            let classes = { standart: new Array(), media: new Array() }
+            let classes = { standart: new Array() }
             for (let key in this.#mediaPrefixes)
                 classes[key] = []
             if (matches.length) {
@@ -437,9 +439,11 @@ export default class CssCompiler{
                 const unitKeys = Object.keys(this.#units.numeric).map(unit => unit.toLowerCase())
                 for (let match of matches) {
                     let cls = match[2]
+                    
                     if (this.#listClasses?.[cls]) {
                         const p = this.#listClasses[cls]
                         let value, important = /^-i$/.test(match[3]) ? ' !important' : ''
+
                         if (p.unit == this.#units.nonNumeric.COLOR)
                             value = /^[a-f0-9]{6,8}$/.test(match[5]) ? `#${match[5]}` : match[5]
                         else if (Object.values(this.#units.nonNumeric).includes(p.unit))
@@ -462,13 +466,13 @@ export default class CssCompiler{
                                     value = `${match[5]}${unit.unit}`
                             }
                         }
+                        
                         const pseudoClass = match?.[4] ? this.#pseudoClassesList[match[4].replace(/_/g, '')] : ''
                         let cssClass = `.${match[0].replace(/\s+/g, '')}${pseudoClass}{\n`
                         for (let prop of Array.isArray(p.prop) ? p.prop : [p.prop]) {
                             cssClass += `\t${prop}:${value}${important};\n`
                         }
                         cssClass += `}\n\n`
-
                         if (match[1] && this.#mediaPrefixes?.[match[1]]) {
                             if (!Array.isArray(classes?.[match[1]]))
                                 classes[match[1]] = []
@@ -646,7 +650,6 @@ export default class CssCompiler{
     }
 
     /**
-     * 
      * @param {string} cssClass 
      * @param {object} params 
      * @param {string|null} [params.unit] 
@@ -660,9 +663,9 @@ export default class CssCompiler{
             if (!this.#listClasses?.[cssClass])
                 throw new Error('Указанный класс не существует')
             if(params?.unit){
-                const allUnits = Object.values(this.#units)
-                if ((typeof params.unit == 'string' || params.unit == null) && allUnits.includes(params.unit.toLowerCase()) && this.#listClasses[cssClass].isSetUnit){
-                    this.#listClasses[cssClass].unit = params.unit == null ? params.unit : params.unit.toLowerCase()
+                let allUnits = {...this.#units.numeric, ...this.#units.nonNumeric}
+                if ((typeof params.unit == 'string' || params.unit == null) && allUnits?.[params.unit.toUpperCase()] && this.#listClasses[cssClass].isSetUnit){
+                    this.#listClasses[cssClass].unit = allUnits?.[params.unit.toUpperCase()]
                     result = true
                 }
             }
@@ -694,6 +697,24 @@ export default class CssCompiler{
         }
     }
 
+    static #setUnitPrecision(unitName, precision){
+        try{
+            if(typeof precision !='number' || precision<0)
+                throw new Error('Установлено неверное значение для precision параметра!')
+            if(!this.#units.numeric?.[unitName.toUpperCase()])
+                throw new Error('Указанная единица измерения не найдена')
+            this.#units.numeric[unitName.toUpperCase()].precision=precision
+            for(let cls of Object.values(this.#listClasses)){
+                if(cls.unit.unit==unitName.toLowerCase())
+                    cls.unit = this.#units.numeric[unitName.toUpperCase()]
+            }
+            return true
+        }catch(err){
+            Logger.error('CssCompiler.setUnitPrecision()',err)
+            return false
+        }
+    }
+
     static async #load(){
         try{
             if (!fs.existsSync(`${this.#projectPath}/cssj.config.json`))
@@ -706,6 +727,11 @@ export default class CssCompiler{
             if(this.#config?.SET_CLASSES){
                 for(let cls in this.#config.SET_CLASSES){
                     this.#setClassProperty(cls, this.#config.SET_CLASSES[cls])
+                }
+            }
+            if(this.#config?.SET_UNITS_PRECISION){
+                for(let unitName in this.#config.SET_UNITS_PRECISION){
+                    this.#setUnitPrecision(unitName, this.#config.SET_UNITS_PRECISION[unitName])
                 }
             }
             return true
