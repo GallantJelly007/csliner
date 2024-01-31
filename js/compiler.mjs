@@ -44,7 +44,7 @@ export default class CssCompiler{
         }
     }
 
-    static #standartListClasses = {
+    static #listClasses = {
         d: { prop: 'display', unit:this.#units.nonNumeric.NULL, priority:1, isSetUnit:false },
         fxw: { prop: 'flex-wrap', unit:this.#units.nonNumeric.NULL, priority:2, isSetUnit:false },
         fd: { prop: 'flex-direction', unit:this.#units.nonNumeric.NULL, priority:3, isSetUnit:false },
@@ -82,45 +82,49 @@ export default class CssCompiler{
         bch: { prop: ['border-left-color', 'border-right-color'], unit: this.#units.nonNumeric.COLOR, priority:35, isSetUnit:false },
         bcv: { prop: ['border-top-color', 'border-bottom-color'], unit: this.#units.nonNumeric.COLOR, priority:36, isSetUnit:false },
         bc: { prop: 'border-color', unit: this.#units.nonNumeric.COLOR, priority:37, isSetUnit:false },
-        brad: { prop: 'border-radius', unit: this.#units.numeric.PX, priority:38, isSetUnit:true},
-        h: { prop: 'height', unit:this.#units.numeric.PR, priority:39, isSetUnit:true},
-        minh: { prop: 'min-height', unit:this.#units.numeric.PR, priority:40, isSetUnit:true},
-        maxh: { prop: 'max-height', unit:this.#units.numeric.PR, priority:41, isSetUnit:true},
-        w: { prop: 'max-height', unit:this.#units.numeric.PR, priority:42, isSetUnit:true},
-        minw: { prop: 'min-width', unit:this.#units.numeric.PR, priority:43, isSetUnit:true},
-        maxw: { prop: 'max-width', unit:this.#units.numeric.PR, priority:44, isSetUnit:true},
-        op: { prop: 'opacity', unit: this.#units.numeric.NONE, priority:45, isSetUnit:false},
-        ff: { prop: 'font-family', unit: this.#units.nonNumeric.NULL, priority:46, isSetUnit:false},
-        fsz: { prop: 'font-size', unit: this.#units.numeric.REM, priority:47, isSetUnit:true},
-        fw: { prop: 'font-weight', unit: this.#units.nonNumeric.NULL, priority:48, isSetUnit:false },
-        ta: { prop: 'text-align', unit: this.#units.nonNumeric.NULL, priority:49, isSetUnit:false },
-        tt: { prop:'text-transform', unit:this.#units.nonNumeric.NULL, priority:50, isSetUnit:false },
-        tdl: { prop: 'text-decoration-line', unit: this.#units.nonNumeric.NULL, priority:51, isSetUnit:false },
-        tds: { prop: 'text-decoration-style', unit: this.#units.nonNumeric.NULL, priority:52, isSetUnit:false },
-        ws: { prop:'white-space', unit: this.#units.nonNumeric.NULL, priority:53, isSetUnit:false },
-        wb: { prop:'word-break', unit: this.#units.nonNumeric.NULL, priority:54, isSetUnit:false },
-        lh: { prop: 'line-height', unit: this.#units.numeric.NONE, priority:55, precision:0, isSetUnit:true},
-        m: { prop: 'margin', unit: this.#units.numeric.REM, priority:56, isSetUnit:true},
-        mh: { prop: ['margin-left', 'margin-right'], unit: this.#units.numeric.REM, priority:57, isSetUnit:true },
-        mv: { prop: ['margin-top', 'margin-bottom'], unit: this.#units.numeric.REM, priority:58, isSetUnit:true },
-        mt: { prop: 'margin-top', unit: this.#units.numeric.REM, priority:59, isSetUnit:true },
-        ml: { prop: 'margin-left', unit: this.#units.numeric.REM, priority:60, isSetUnit:true },
-        mb: { prop: 'margin-bottom', unit: this.#units.numeric.REM, priority:61, isSetUnit:true },
-        mr: { prop: 'margin-right', unit: this.#units.numeric.REM, priority:62, isSetUnit:true },
-        p: { prop: 'padding', unit: this.#units.numeric.REM, priority:63, isSetUnit:true },
-        ph: { prop: ['padding-left', 'padding-right'], unit: this.#units.numeric.REM, priority:64, isSetUnit:true },
-        pv: { prop: ['padding-top', 'padding-bottom'], unit: this.#units.numeric.REM, priority:65, isSetUnit:true },
-        pt: { prop: 'margin-top', unit: this.#units.numeric.REM, priority:66, isSetUnit:true },
-        pl: { prop: 'padding-left', unit: this.#units.numeric.REM, priority:67, isSetUnit:true },
-        pb: { prop: 'padding-bottom', unit: this.#units.numeric.REM, priority:68, isSetUnit:true },
-        pr: { prop: 'padding-right', unit: this.#units.numeric.REM, priority:69, isSetUnit:true },
-        t: { prop: 'top', unit: this.#units.numeric.REM, priority:70, isSetUnit:true },
-        l: { prop: 'left', unit:this.#units.numeric.REM, priority:71, isSetUnit:true },
-        b: { prop: 'bottom', unit:this.#units.numeric.REM, priority:72, isSetUnit:true },
-        r: { prop: 'right', unit:this.#units.numeric.REM, priority:73, isSetUnit:true },
-        z: { prop: 'z-index', unit: this.#units.numeric.NONE, priority:74, isSetUnit:false } ,
-        c: { prop: 'color', unit: this.#units.nonNumeric.COLOR, priority:75, isSetUnit:false },
-        bgc: { prop: 'background-color', unit: this.#units.nonNumeric.COLOR, priority:76, isSetUnit:false },
+        brad: { prop: 'border-radius', unit: this.#units.numeric.REM, priority:38, isSetUnit:true},
+        bradtl: { prop: 'border-top-left-radius', unit: this.#units.numeric.REM, priority:39, isSetUnit:true},
+        bradtr: { prop: 'border-top-right-radius', unit: this.#units.numeric.REM, priority:40, isSetUnit:true},
+        bradbr: { prop: 'border-bottom-right-radius', unit: this.#units.numeric.REM, priority:41, isSetUnit:true},
+        bradbl: { prop: 'border-bottom-left-radius', unit: this.#units.numeric.REM, priority:42, isSetUnit:true},
+        h: { prop: 'height', unit:this.#units.numeric.PR, priority:43, isSetUnit:true},
+        minh: { prop: 'min-height', unit:this.#units.numeric.PR, priority:44, isSetUnit:true},
+        maxh: { prop: 'max-height', unit:this.#units.numeric.PR, priority:45, isSetUnit:true},
+        w: { prop: 'max-height', unit:this.#units.numeric.PR, priority:46, isSetUnit:true},
+        minw: { prop: 'min-width', unit:this.#units.numeric.PR, priority:47, isSetUnit:true},
+        maxw: { prop: 'max-width', unit:this.#units.numeric.PR, priority:48, isSetUnit:true},
+        op: { prop: 'opacity', unit: this.#units.numeric.NONE, priority:49, isSetUnit:false},
+        ff: { prop: 'font-family', unit: this.#units.nonNumeric.NULL, priority:50, isSetUnit:false},
+        fsz: { prop: 'font-size', unit: this.#units.numeric.REM, priority:51, isSetUnit:true},
+        fw: { prop: 'font-weight', unit: this.#units.nonNumeric.NULL, priority:52, isSetUnit:false },
+        ta: { prop: 'text-align', unit: this.#units.nonNumeric.NULL, priority:53, isSetUnit:false },
+        tt: { prop:'text-transform', unit:this.#units.nonNumeric.NULL, priority:54, isSetUnit:false },
+        tdl: { prop: 'text-decoration-line', unit: this.#units.nonNumeric.NULL, priority:55, isSetUnit:false },
+        tds: { prop: 'text-decoration-style', unit: this.#units.nonNumeric.NULL, priority:56, isSetUnit:false },
+        ws: { prop:'white-space', unit: this.#units.nonNumeric.NULL, priority:57, isSetUnit:false },
+        wb: { prop:'word-break', unit: this.#units.nonNumeric.NULL, priority:58, isSetUnit:false },
+        lh: { prop: 'line-height', unit: this.#units.numeric.NONE, priority:59, precision:0, isSetUnit:true},
+        m: { prop: 'margin', unit: this.#units.numeric.REM, priority:60, isSetUnit:true},
+        mh: { prop: ['margin-left', 'margin-right'], unit: this.#units.numeric.REM, priority:61, isSetUnit:true },
+        mv: { prop: ['margin-top', 'margin-bottom'], unit: this.#units.numeric.REM, priority:62, isSetUnit:true },
+        mt: { prop: 'margin-top', unit: this.#units.numeric.REM, priority:63, isSetUnit:true },
+        ml: { prop: 'margin-left', unit: this.#units.numeric.REM, priority:64, isSetUnit:true },
+        mb: { prop: 'margin-bottom', unit: this.#units.numeric.REM, priority:65, isSetUnit:true },
+        mr: { prop: 'margin-right', unit: this.#units.numeric.REM, priority:66, isSetUnit:true },
+        p: { prop: 'padding', unit: this.#units.numeric.REM, priority:67, isSetUnit:true },
+        ph: { prop: ['padding-left', 'padding-right'], unit: this.#units.numeric.REM, priority:68, isSetUnit:true },
+        pv: { prop: ['padding-top', 'padding-bottom'], unit: this.#units.numeric.REM, priority:69, isSetUnit:true },
+        pt: { prop: 'margin-top', unit: this.#units.numeric.REM, priority:70, isSetUnit:true },
+        pl: { prop: 'padding-left', unit: this.#units.numeric.REM, priority:71, isSetUnit:true },
+        pb: { prop: 'padding-bottom', unit: this.#units.numeric.REM, priority:72, isSetUnit:true },
+        pr: { prop: 'padding-right', unit: this.#units.numeric.REM, priority:73, isSetUnit:true },
+        t: { prop: 'top', unit: this.#units.numeric.REM, priority:74, isSetUnit:true },
+        l: { prop: 'left', unit:this.#units.numeric.REM, priority:75, isSetUnit:true },
+        b: { prop: 'bottom', unit:this.#units.numeric.REM, priority:76, isSetUnit:true },
+        r: { prop: 'right', unit:this.#units.numeric.REM, priority:77, isSetUnit:true },
+        z: { prop: 'z-index', unit: this.#units.numeric.NONE, priority:78, isSetUnit:false } ,
+        c: { prop: 'color', unit: this.#units.nonNumeric.COLOR, priority:79, isSetUnit:false },
+        bgc: { prop: 'background-color', unit: this.#units.nonNumeric.COLOR, priority:80, isSetUnit:false },
     }
 
     static #atRulesList=[
@@ -169,9 +173,6 @@ export default class CssCompiler{
         }
     ]
 
-    static #listClasses = JSON.parse(JSON.stringify(this.#standartListClasses))
-
-
     static #standartConfig = {
         BUILD_PATH: path.normalize(process.cwd().split(/[\/\\]*node_modules/)[0]).replace(/\\/g, '/')+"/build/",
         HTML_PATHES:[
@@ -197,36 +198,34 @@ export default class CssCompiler{
     static #projectPath = path.normalize(process.cwd().split(/[\/\\]*node_modules/)[0]).replace(/\\/g, '/')
     static #modulePath = path.dirname(url.fileURLToPath(import.meta.url))
 
-    static #standartRegClasses = [
-        /\s{1}(md|mdl|mdp)?-?(d)(-i)?(_[hfbdav]{1})?-(flex|inflex(:inline-flex){0}|block|inblock(:inline-block){0}|grid|ingrid(:inline-grid){0}|table|rtable(:table-row){0}|inline|none|inherit|initial)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(fxw)(-i)?(_[hfbdav]{1})?-(wrap|nowrap)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(fd)(-i)?(_[hfbdav]{1})?-(row|rowrs(:row-reverse){0}|col(:column){0}|colrs(column-reverse){0}|inherit|initial)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(ai|as|ajc)(-i)?(_[hfbdav])?-(start(:flex-start){0}|center|end(:flex-end){0}|stretch|inherit|initial)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(jc)(-i)?(_[hfbdav]{1})?-(start(:flex-start){0}|center|end(:flex-end){0}|stretch|bspace(:space-between){0}|aspace(:space-around){0}|espace(:space-evenly){0}|inherit|initial)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(pos)(-i)?(_[hfbdav]{1})?-(static|absolute|relative|fixed|sticky|inherit|initial)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(ov|ovy|ovx)(-i)?(_[hfbdav]{1})?-(visible|hidden|clip|scroll|auto|inherit|initial)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(bst|bsr|bsb|bsl|bsh|bsv|bs)(-i)?(_[hfbdav]{1})?-(solid|dotted|dashed|none)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(fw)(-i)?(_[hfbdav]{1})?-(100|200|300|400|500|600|700|800|900)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(ta)(-i)?(_[hfbdav]{1})?-(left|center|right|justify)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(ff)(-i)?(_[hfbdav]{1})?-([\w\-]+|inherit|initial)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(tt)(-i)?(_[hfbdav]{1})?-(upper(:uppercase){0}|lower(:lowercase){0}|cap(:capitalize){0}|none)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(tdl)(-i)?(_[hfbdav]{1})?-(under(:underline){0}|over(:overline){0}|linet(:line-through){0}|none)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(tds)(-i)?(_[hfbdav]{1})?-(solid|double|dotted|dashed|wavy)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(ws)(-i)?(_[hfbdav]{1})?-(normal|pre|pwrap(:pre-wrap){0}|bspace(:break-spaces){0}|nowrap|inherit|initial)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(wb)(-i)?(_[hfbdav]{1})?-(normal|abreak(:break-all){0}|keep(:keep-all){0}|wbreak(:break-word){0}|inherit|initial)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(flex|basis|grow|shrink|h|minh|maxh|w|minw|maxw|bwt|bwr|bwb|bwl|bwh|bwv|bw|brad|op|fsz|lh)(-i)?(_[hfbdav]{1})?-(\d+(_\d+)?|auto|inherit|initial|unset|none)(px|pt|pc|cm|mm|q|in|em|rem|ex|ch|lh|rlh|vw|vw|vmn|vmx|vi|vb|svw|svh|lvw|lvh|dvw|dvh|pr)?\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(order|l|t|r|b|z|m|mh|mv|mt|mr|mb|ml|p|ph|pv|pt|pr|pb|pl)(-i)?(_[hfbdav]{1})?-(-?\d+(_\d+)?|auto|inherit|initial|unset|none)(px|pt|pc|cm|mm|q|in|em|rem|ex|ch|lh|rlh|vw|vw|vmn|vmx|vi|vb|svw|svh|lvw|lvh|dvw|dvh|pr)?\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(c|bgc|bct|bcl|bcb|bcr|bc|bch|bcv)(-i)?(_[hfbdav]{1})?-([a-f0-9]{6,8}|[a-z]+)\s{1}/g
+    static #regClasses = [
+        /\s{1}(md|mdl|mdp)?-?(d)(-i)?pseudo-(flex|inflex(:inline-flex){0}|block|inblock(:inline-block){0}|grid|ingrid(:inline-grid){0}|table|rtable(:table-row){0}|inline|none|inherit|initial)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(fxw)(-i)?pseudo-(wrap|nowrap)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(fd)(-i)?pseudo-(row|rowrs(:row-reverse){0}|col(:column){0}|colrs(column-reverse){0}|inherit|initial)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(ai|as|ajc)(-i)?(_{1,2}[hfbdav])?-(start(:flex-start){0}|center|end(:flex-end){0}|stretch|inherit|initial)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(jc)(-i)?pseudo-(start(:flex-start){0}|center|end(:flex-end){0}|stretch|bspace(:space-between){0}|aspace(:space-around){0}|espace(:space-evenly){0}|inherit|initial)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(pos)(-i)?pseudo-(static|absolute|relative|fixed|sticky|inherit|initial)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(ov|ovy|ovx)(-i)?pseudo-(visible|hidden|clip|scroll|auto|inherit|initial)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(bst|bsr|bsb|bsl|bsh|bsv|bs)(-i)?pseudo-(solid|dotted|dashed|none)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(fw)(-i)?pseudo-(100|200|300|400|500|600|700|800|900)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(ta)(-i)?pseudo-(left|center|right|justify)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(ff)(-i)?pseudo-([\w\-]+|inherit|initial)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(tt)(-i)?pseudo-(upper(:uppercase){0}|lower(:lowercase){0}|cap(:capitalize){0}|none)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(tdl)(-i)?pseudo-(under(:underline){0}|over(:overline){0}|linet(:line-through){0}|none)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(tds)(-i)?pseudo-(solid|double|dotted|dashed|wavy)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(ws)(-i)?pseudo-(normal|pre|pwrap(:pre-wrap){0}|bspace(:break-spaces){0}|nowrap|inherit|initial)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(wb)(-i)?pseudo-(normal|abreak(:break-all){0}|keep(:keep-all){0}|wbreak(:break-word){0}|inherit|initial)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(flex|basis|grow|shrink|h|minh|maxh|w|minw|maxw|bwt|bwr|bwb|bwl|bwh|bwv|bw|brad|op|fsz|lh)(-i)?pseudo-(\d+(_\d+)?|auto|inherit|initial|unset|none)units.numeric\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(order|l|t|r|b|z|m|mh|mv|mt|mr|mb|ml|p|ph|pv|pt|pr|pb|pl)(-i)?pseudo-(-?\d+(_\d+)?|auto|inherit|initial|unset|none)units.numeric\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(c|bgc|bct|bcl|bcb|bcr|bc|bch|bcv)(-i)?pseudo-([a-f0-9]{3,8}|[a-z]+)\s{1}/g
     ]
-
-    static #regClasses = [...this.#standartRegClasses]
 
     static #classPropsRegex = /class="([\w\s\-]+)"/g
     static #cssSelectorRegex = /([\w\s\-\*\+>\(\)\[\]\.,#:"='\^\$\~]+)\{([^\{\}]+)\}/g
     static #cssPropsRegex = /([\w\- ]+):([ \w\(\)\-\.\\\/!"'#%,]+);?/g
     static #allCssContructRegex = /((@)?[^@\{\}\;]+)(\{)|(@[^\{\}\;]+(;))/
     static #mediaRegex = /(@media[^\{\}]+)\{(([\w\s\-\*\+>\@\(\)\[\]\.,#:"='\^\$\~]+)\{([^\{\}]+)\})+[\s\w-]+\}/g
-    static #isWatch=false
+    static #isStartWatch=false
     static #cache = {}
     static #loadingProcess
 
@@ -246,12 +245,26 @@ export default class CssCompiler{
     }
     
     static #pseudoClassesList = {
-        h:':hover',
-        f:':focus',
-        b:':blur',
-        d:':disabled',
-        a:':active',
-        v:':visited',
+        act:':active',
+        blr:':blur',
+        chk:':checked',
+        dis:':disabled',
+        enb:':enabled',
+        emp:':empty',
+        fcs:':focus',
+        fch:':first-child',
+        fls:':fullscreen',
+        hvr:':hover',
+        inv:':invalid',
+        lch:':last-child',
+        lnk:':link',
+        rdo:':read-only',
+        rdw:':read-write',
+        rqd:':required',
+        opt:':optional',
+        tgt:':target',
+        vst:':visited',
+        val:':valid'
     }
 
     static #excludeValues = [
@@ -327,41 +340,21 @@ export default class CssCompiler{
         return this.#config.MERGE_SAME_SELECTORS ? this.#mergeSameRules(rules) : this.#concatAllRules(rules)
     }
 
-    static #getFiles(pathStr, ext){
+    static #getFiles(pathStr, ext){ 
         try{
-            let filePathes=[]
             pathStr = path.isAbsolute(pathStr) ? pathStr : path.join(this.#projectPath, pathStr).replace(/\\/g, '/')
             const stat = fs.statSync(pathStr)
             let pathes = stat.isDirectory() ? fs.readdirSync(pathStr,{recursive:true,encoding:'utf-8'}) : [pathStr]
-            let ignorePathes = this.#config?.IGNORE_PATHES?.length && Array.isArray(this.#config?.IGNORE_PATHES) ? this.#config.IGNORE_PATHES : []
-            const buildPath = path.isAbsolute(this.#config.BUILD_PATH) ? this.#config.BUILD_PATH : path.join(this.#projectPath, this.#config.BUILD_PATH).replace(/\\/g, '/')
-            const dir = /\.\w+$/.test(buildPath) ? path.dirname(buildPath) : buildPath
-            ignorePathes.push(dir)
-            if(ignorePathes.length)
-                ignorePathes = ignorePathes.map(p => {
-                                                    const ignorePath = path.isAbsolute(p) ? p : path.join(this.#projectPath, p).replace(/\\/g, '/')
-                                                    return new RegExp('^'+(ignorePath.replace(/[\/\\]+/g,'[\\/\\\\]+')))
-                                                })
-            pathes = pathes.filter(p => !(/node_modules/.test(p)))
-            for(let p of pathes){
-                if(path.extname(p) == ext){
-                    const filePath = path.isAbsolute(p) ? p : path.join(this.#projectPath, p).replace(/\\/g, '/')
-                    if(ignorePathes.length){
-                        let isIgnore = false
-                        for(let reg of ignorePathes){
-                            if(reg.test(filePath)){
-                                isIgnore = true
-                                break
-                            }
-                        }
-                        if(!isIgnore)
-                            filePathes.push(filePath)
-                    }else{
-                        filePathes.push(filePath)
-                    }
-                }
-            }
-            return filePathes
+            let ignorePathes = Array.isArray(this.#config?.IGNORE_PATHES) ? this.#config.IGNORE_PATHES : []
+            const buildPath = path.isAbsolute(this.#config.BUILD_PATH) ? this.#config.BUILD_PATH : path.join(this.#projectPath, this.#config.BUILD_PATH)
+            const buildDir = /\.\w+$/.test(buildPath) ? path.dirname(buildPath) : buildPath
+
+            ignorePathes = [...(ignorePathes.map(p => path.isAbsolute(p) ? p : path.join(this.#projectPath, p))), buildDir]
+            pathes = pathes.map(p=>path.isAbsolute(p) ? p : path.join(this.#projectPath, p).replace(/\\/g, '/'))
+                            .filter(p => !(/node_modules/.test(p))
+                                        && ignorePathes.reduce((res,cur)=>res &&= !(new RegExp(cur.replace(/[\\\/]+/g,'[\\\\\\/]+').replace('.','\\.'))).test(p),true)
+                                        && path.extname(p) == ext)
+            return pathes
         }catch(err){
             Logger.error('CssCompiler.getHtmlFiles()', err)
             return null
@@ -387,7 +380,7 @@ export default class CssCompiler{
         }
     }
      
-    static async buildCSS(){
+    static async buildCSS(isWatch = false){
         try{
             this.#loading()
             if(!(await this.#load()))
@@ -439,35 +432,34 @@ export default class CssCompiler{
                 const unitKeys = Object.keys(this.#units.numeric).map(unit => unit.toLowerCase())
                 for (let match of matches) {
                     let cls = match[2]
-                    
                     if (this.#listClasses?.[cls]) {
                         const p = this.#listClasses[cls]
                         let value, important = /^-i$/.test(match[3]) ? ' !important' : ''
 
                         if (p.unit == this.#units.nonNumeric.COLOR)
-                            value = /^[a-f0-9]{6,8}$/.test(match[5]) ? `#${match[5]}` : match[5]
+                            value = /^[a-f0-9]{3,8}$/.test(match[6]) ? `#${match[6]}` : match[6]
                         else if (Object.values(this.#units.nonNumeric).includes(p.unit))
-                            value = keysRValues.includes(match[5]) ? replacedValues[match[5]] : match[5]
+                            value = keysRValues.includes(match[6]) ? replacedValues[match[6]] : match[6]
                         else {
-                            if(match?.[7] && unitKeys.includes(match[7]) && !p.isSetUnit)
+                            if(match?.[8] && unitKeys.includes(match[8]) && !p.isSetUnit)
                                 continue
-                            const unit = match?.[7] && unitKeys.includes(match[7]) ? this.#units.numeric[match[7].toUpperCase()] : p.unit
+                            const unit = match?.[8] && unitKeys.includes(match[8]) ? this.#units.numeric[match[8].toUpperCase()] : p.unit
                             const precision = typeof p?.precision === 'number' ? p.precision : (typeof unit?.precision == 'number' ? unit.precision : 0)
-                            if (this.#excludeValues.includes(match[5])) {
-                                value = match[5]
+                           
+                            if (this.#excludeValues.includes(match[6])) {
+                                value = match[6]
                             } else {
-                                if (/_/.test(match[5]))
-                                    value = `${match[5].replace('_', '.')}${unit.unit}`
+                                if (/_/.test(match[6]))
+                                    value = `${match[6].replace('_', '.')}${unit.unit}`
                                 else if (precision) {
-                                    value = match[5].padStart(precision + 1, '0').split('')
+                                    value = match[6].padStart(precision + 1, '0').split('')
                                     value.splice(-precision, 0, '.')
                                     value = `${value.join('')}${unit.unit}`
                                 } else
-                                    value = `${match[5]}${unit.unit}`
+                                    value = `${match[6]}${unit.unit}`
                             }
                         }
-                        
-                        const pseudoClass = match?.[4] ? this.#pseudoClassesList[match[4].replace(/_/g, '')] : ''
+                        const pseudoClass = match?.[5] ? this.#pseudoClassesList[match[5]] : ''
                         let cssClass = `.${match[0].replace(/\s+/g, '')}${pseudoClass}{\n`
                         for (let prop of Array.isArray(p.prop) ? p.prop : [p.prop]) {
                             cssClass += `\t${prop}:${value}${important};\n`
@@ -524,18 +516,18 @@ export default class CssCompiler{
             
             
             let buildPath = path.isAbsolute(this.#config.BUILD_PATH) ? this.#config.BUILD_PATH : path.join(this.#projectPath, this.#config.BUILD_PATH).replace(/\\/g, '/')
-            let dir = /\.\w+$/.test(buildPath) ? path.dirname(buildPath) : buildPath
-            if(!fs.existsSync(dir))
-                fs.mkdirSync(dir,{recursive:true})
+            let buildDir = /\.\w+$/.test(buildPath) ? path.dirname(buildPath) : buildPath
+            if(!fs.existsSync(buildDir))
+                fs.mkdirSync(buildDir,{recursive:true})
             buildPath = /\.css$/.test(buildPath) 
                 ? buildPath 
                 : (/\.\w+$/.test(buildPath) 
                     ? path.join(path.dirname(buildPath),'./app.css').replace(/\\/g, '/')
                     : path.join(buildPath,'./app.css').replace(/\\/g, '/'))
             fs.writeFileSync( buildPath, resultCSS, {encoding:'utf8'} )
-            if(process.argv[1] == 'watch' && !this.#isWatch){
-                this.#runWatchFileChanges([...allCssFiles, ...allHtmlFiles, `${this.#projectPath}/cssj.config.json`])
-                this.#isWatch = true
+            if(isWatch && !this.#isStartWatch){
+                this.#runWatchFileChanges()
+                this.#isStartWatch = true
             }
             this.#loading(false)
             if(Logger.isDebug)
@@ -621,29 +613,70 @@ export default class CssCompiler{
         return concatCss
     }
 
-    static #runWatchFileChanges(filePathes){
+    static #runWatchFileChanges(){
         try{
-            for(let file of filePathes){
-                fs.watch(file, {persistent:true, encoding:'utf-8'}, (event, filename)=>{
-                    if(event == 'change'){
-                        const keyFile = crypto.createHash('md5').update(file).digest('hex')
-                        const stat = fs.statSync(file)
-                        if(this.#cache?.[keyFile] && stat.mtimeMs-this.#cache?.[keyFile]?.mTime < 100)
-                            return
-                        else{
-                            if(this.#cache?.[keyFile]){
-                                this.#cache[keyFile].mTime = stat.mtimeMs
-                            }else{
-                                this.#cache[keyFile]={
-                                    filePath:file,
+            const buildPath = path.isAbsolute(this.#config.BUILD_PATH) ? this.#config.BUILD_PATH : path.join(this.#projectPath, this.#config.BUILD_PATH).replace(/\\/g, '/')
+            const buildDir = /\.\w+$/.test(buildPath) ? path.dirname(buildPath) : buildPath
+            let ignorePathes = Array.isArray(this.#config?.IGNORE_PATHES) ? this.#config.IGNORE_PATHES : []
+            ignorePathes = [...(ignorePathes.map(p=>path.isAbsolute(p) ? p : path.join(this.#projectPath,p))), buildDir]     
+            let pathes = fs.readdirSync(this.#projectPath, {recursive:true, encoding:'utf-8'})
+            .map(p=>path.isAbsolute(p) ? p : path.join(this.#projectPath, p).replace(/[\\\/]+/g, '/'))
+            .filter(p=>{
+                return !/node_modules/.test(p) 
+                       && /(\.html|\.css)$/.test(p)
+                       && ignorePathes.reduce((res,cur)=>res &&= !(new RegExp(cur.replace(/[\\\/]+/g,'[\\\\\\/]+').replace('.','\\.'))).test(p),true)
+            })
+            pathes.push(path.join(this.#projectPath, './cssj.config.json').replace(/[\\\/]+/g, '/'))
+
+            for(const p of pathes){
+                if(fs.existsSync(p)){
+                    const keyFile = crypto.createHash('md5').update(p).digest('hex')
+                    const stat = fs.statSync(p)
+                    this.#cache[keyFile] = {
+                        filePath: p,
+                        pathRegex: new RegExp(p.replace(/[\\\/]+/g,'[\\\\\\/]+').replace('.','\\.')),
+                        fileName: path.basename(p),
+                        mTime: stat.mtimeMs
+                    }
+                }
+            }
+            
+            fs.watch(this.#projectPath, { persistent: true, recursive:true, encoding: 'utf-8' }, (event, filename) => {
+                try{
+                    if (typeof filename === 'string' && (/(\.html|\.css|\.json)$/.test(filename))) {
+                        const fullPath = path.join(this.#projectPath,filename).replace(/[\\\/]+/g, '/')
+                        const cacheFilePair = Object.entries(this.#cache).find(obj=>obj[1].pathRegex.test(fullPath))
+                        const cacheFile = cacheFilePair?.[1]
+                        const cacheKey = cacheFilePair?.[0]
+                        const stat = fs.existsSync(fullPath) ? fs.statSync(fullPath) : undefined
+                        let isRebuild = false
+                        if(event=='change' && cacheFile && stat){
+                            if(Math.abs(stat.mtimeMs - cacheFile.mTime) > 100){
+                                cacheFile.mTime = stat.mtimeMs
+                                isRebuild = true
+                            } 
+                        }else if(event=='rename'){
+                            if((cacheFile && stat && path.basename(filename) != cacheFile.fileName) || (stat && !cacheFile)){
+                                const newCacheKey = crypto.createHash('md5').update(fullPath).digest('hex')
+                                this.#cache[newCacheKey] = {
+                                    filePath: fullPath,
+                                    pathRegex: new RegExp(fullPath.replace(/[\\\/]+/g,'[\\\\\\/]+').replace('.','\\.')),
+                                    fileName: path.basename(fullPath),
                                     mTime: stat.mtimeMs
                                 }
-                            }   
+                            }
+                            if((cacheFile && stat && path.basename(filename) != cacheFile.fileName) || (cacheFile && !stat))
+                                delete this.#cache[cacheKey]
+                            if((stat && !cacheFile)||(cacheFile && !stat))
+                                isRebuild = true
                         }
-                        this.buildCSS()
+                        if(isRebuild)
+                            this.buildCSS()
                     }
-                })
-            }
+                }catch(err){
+                    Logger.error('CssCompiler.runWatchFileChanges[fs.watch]()', err)
+                }
+            })
         }catch(err){
             Logger.error('CssCompiler.runWatchFileChanges()', err)
         }
@@ -673,13 +706,13 @@ export default class CssCompiler{
                 this.#listClasses[cssClass].priority = params.priority
                 result = true
             }
-            if(this.#listClasses[cssClass]?.precision && params?.precision && typeof params?.precision == 'number' && params?.precision >= 0){
+            if(params?.precision && typeof params?.precision == 'number' && params?.precision >= 0 && this.#listClasses[cssClass].isSetUnit){
                 this.#listClasses[cssClass].precision = params.precision
                 result = true
             }
             if(typeof params?.rename == 'string'){
                 delete Object.assign(this.#listClasses, { [params.rename]: this.#listClasses[cssClass] })[cssClass]
-                let reg = new RegExp(`^\\/([\\w\\W]+\\([\\w\\W]+\\|)(${cssClass})(\\|[\\w\\W]+\\)[\\w\\W]+)\\/g`)//проверить
+                let reg = new RegExp(`^\\/([\\w\\W]+\\([\\w\\W]+\\|)(${cssClass})(\\|[\\w\\W]+\\)[\\w\\W]+)\\/g`)
                 for (let i = 0; i < this.#regClasses.length; i++) {
                     if (reg.test(this.#regClasses[i].toString())) {
                         let oldReg = this.#regClasses[i].toString()
@@ -722,6 +755,7 @@ export default class CssCompiler{
             let data = fs.readFileSync(`${this.#projectPath}/cssj.config.json`,{encoding:'utf-8'})
             if(!data)
                 throw new Error('Не удалось прочитать файл конфигурации!')
+            this.#loadRegClasses()
             let config = JSON.parse(data)
             this.#config = config
             if(this.#config?.SET_CLASSES){
@@ -740,6 +774,16 @@ export default class CssCompiler{
             return false
         }
     }   
+
+    static async #loadRegClasses(){
+        let regPseudo = `(_{1,2}(${Object.keys(this.#pseudoClassesList).join('|')}){1})?`
+        let regNum = `(${Array.from(Object.entries(this.#units.numeric)).filter(el=>el[1].unit!='').map(el=>el[0].toLowerCase()).join('|')})?`
+        for(let i = 0; i<this.#regClasses.length; i++){
+            let newReg = this.#regClasses[i].toString().replace(/^\//,'').replace(/\/g$/,'').replace('pseudo',regPseudo)
+            newReg = newReg.replace('units.numeric', regNum)
+            this.#regClasses[i] = new RegExp(newReg,'g')
+        }
+    }
 
     static init(){
         try{
