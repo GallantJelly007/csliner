@@ -711,17 +711,21 @@ export default class CssCompiler{
                 result = true
             }
             if(typeof params?.rename == 'string'){
-                delete Object.assign(this.#listClasses, { [params.rename]: this.#listClasses[cssClass] })[cssClass]
-                let reg = new RegExp(`^\\/([\\w\\W]+\\([\\w\\W]+\\|)(${cssClass})(\\|[\\w\\W]+\\)[\\w\\W]+)\\/g`)
-                for (let i = 0; i < this.#regClasses.length; i++) {
-                    if (reg.test(this.#regClasses[i].toString())) {
-                        let oldReg = this.#regClasses[i].toString()
-                        let newReg = new RegExp(oldReg.replace(reg, `$1${params.rename}$3`),'g')
-                        this.#regClasses[i] = newReg
-                        break
+                if(Object.keys(this.#listClasses).includes(params.rename))
+                Logger.warning('CssCompiler.setClassProperty()','Имя заданное для переименования класса уже существует, класс не будет переименован.', params)
+                else{
+                    delete Object.assign(this.#listClasses, { [params.rename]: this.#listClasses[cssClass] })[cssClass]
+                    let reg = new RegExp(`^\\/([\\w\\W]+\\([\\w\\W]+\\|)(${cssClass})(\\|[\\w\\W]+\\)[\\w\\W]+)\\/g`)
+                    for (let i = 0; i < this.#regClasses.length; i++) {
+                        if (reg.test(this.#regClasses[i].toString())) {
+                            let oldReg = this.#regClasses[i].toString()
+                            let newReg = new RegExp(oldReg.replace(reg, `$1${params.rename}$3`), 'g')
+                            this.#regClasses[i] = newReg
+                            break
+                        }
                     }
+                    result = true
                 }
-                result = true
             }
             return result
         }catch(err){

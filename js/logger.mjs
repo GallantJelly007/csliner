@@ -51,18 +51,18 @@ export default class Logger{
                 let time = new Time()
                 let t = time.format('${H:m:S}')
                 if (Logger.isDebug)
-                    console.log(color, `[PID - ${process.pid}] ${name}:\n${messageName} - ${t}\n${(url != '' ? `URL: ${url}\n` : '')}-----------------------------------------------------------------\n${text != '' ? `${text}` : ''}${textObj != '' ? `: ${textObj}` : ''}\n`)
+                    console.log(color, `[PID - ${process.pid}] ${name}:\n${messageName} - ${t}\n${(url != '' ? `URL: ${url}\n` : '')}-----------------------------------------------------------------\n${text != '' ? `${text}` : ''}${textObj != '' ? `\nOBJECT:\n${textObj}` : ''}\n`)
                 if (Logger.#logFolder == '' || !Logger.#isInit)
                     return resolve(false)
                 let fileName = `log-${time.format('${D.M.Y}')}.txt`
                 let logFilePath = path.join(Logger.#logFolder, `/${fileName}`).replace(/\\/g, '/')
                 if (!fs.existsSync(logFilePath)) {
-                    fs.writeFile(logFilePath, `[PID - ${process.pid}] ${name}:\n${messageName} - ${t}\n${(url != '' ? `URL: ${url}\n` : '')}-----------------------------------------------------------------\n${text != '' ? `${text}` : ''}${textObj != '' ? `: ${textObj}` : ''}\n`, (err) => {
+                    fs.writeFile(logFilePath, `[PID - ${process.pid}] ${name}:\n${messageName} - ${t}\n${(url != '' ? `URL: ${url}\n` : '')}-----------------------------------------------------------------\n${text != '' ? `${text}` : ''}${textObj != '' ? `\nOBJECT:\n${textObj}` : ''}\n`, (err) => {
                         if (err != null) reject(err)
                         resolve(true)
                     })
                 } else {
-                    fs.appendFile(logFilePath, `[PID - ${process.pid}] ${name}:\n${messageName} - ${t}\n${(url != '' ? `URL: ${url}\n` : '')}-----------------------------------------------------------------\n${text != '' ? `${text}` : ''}${textObj != '' ? `: ${textObj}` : ''}\n`, (err) => {
+                    fs.appendFile(logFilePath, `[PID - ${process.pid}] ${name}:\n${messageName} - ${t}\n${(url != '' ? `URL: ${url}\n` : '')}-----------------------------------------------------------------\n${text != '' ? `${text}` : ''}${textObj != '' ? `\nOBJECT:\n${textObj}` : ''}\n`, (err) => {
                         if (err != null) reject(err)
                         resolve(true)
                     })
