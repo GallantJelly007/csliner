@@ -385,7 +385,7 @@ _Результат в css:_
 _Результат в css:_
 ```css
 .m-10px{
-    margin: 10px !important;
+    margin: 10px;
 }
 ```
 Оба варианта работают только в том, случае если для класса разрешено использовать свойство __unit__ при настройке в __SET_CLASSES__, иначе класс не будет добавлен в итоговый сss файл
@@ -554,14 +554,14 @@ _Пример:_
 ---
 #### -------------------------------------- __fd__ --------------------------------------
 - __Свойство:__ flex-direction
-- __Значение:__ row | rowrs _(row-reverse)_ | col _(column)_ | colrs _(column-reverse)_ | inherit | initial
+- __Значение:__ row | row-rs _(row-reverse)_ | col _(column)_ | col-rs _(column-reverse)_ | inherit | initial
 - __Единица измерения по умолчанию:__ NULL
 - __Приоритет__: 3
 - __Настраиваемые свойства в SET_CLASSES:__ rename, priority
 
 _Пример:_
 ```css
-.fd-rowrs{
+.fd-row-rs{
     flex-direction: row-reverse;
 }
 ```

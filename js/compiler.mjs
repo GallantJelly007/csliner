@@ -201,7 +201,7 @@ export default class CssCompiler{
     static #regClasses = [
         /\s{1}(md|mdl|mdp)?-?(d)(-i)?pseudo-(flex|inflex(:inline-flex){0}|block|inblock(:inline-block){0}|grid|ingrid(:inline-grid){0}|table|rtable(:table-row){0}|inline|none|inherit|initial)\s{1}/g,
         /\s{1}(md|mdl|mdp)?-?(fxw)(-i)?pseudo-(wrap|nowrap)\s{1}/g,
-        /\s{1}(md|mdl|mdp)?-?(fd)(-i)?pseudo-(row|rowrs(:row-reverse){0}|col(:column){0}|colrs(column-reverse){0}|inherit|initial)\s{1}/g,
+        /\s{1}(md|mdl|mdp)?-?(fd)(-i)?pseudo-(row|row-rs(:row-reverse){0}|col(:column){0}|col-rs(column-reverse){0}|inherit|initial)\s{1}/g,
         /\s{1}(md|mdl|mdp)?-?(ai|as|ajc)(-i)?(_{1,2}[hfbdav])?-(start(:flex-start){0}|center|end(:flex-end){0}|stretch|inherit|initial)\s{1}/g,
         /\s{1}(md|mdl|mdp)?-?(jc)(-i)?pseudo-(start(:flex-start){0}|center|end(:flex-end){0}|stretch|bspace(:space-between){0}|aspace(:space-around){0}|espace(:space-evenly){0}|inherit|initial)\s{1}/g,
         /\s{1}(md|mdl|mdp)?-?(pos)(-i)?pseudo-(static|absolute|relative|fixed|sticky|inherit|initial)\s{1}/g,

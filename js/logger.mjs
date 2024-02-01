@@ -33,36 +33,41 @@ export default class Logger{
     /**
      * Базовый метод вывода для логера
      * @param {string} name 
-     * @param {string} text 
+     * @param {string|Error} text 
      * @param {any} obj 
-     * @param {string} url 
      * @param {string} color 
      * @returns 
      */
-    static #baseDebug(name,text,obj=null,url='',color, messageName){
+    static #baseDebug(name,text,obj=null,color, messageName){
         return new Promise((resolve,reject)=>{
             try{
-                let textObj = ''
-                try {
-                    textObj = obj && obj != null ? JSON.stringify(obj) : ''
-                } catch (err) {
-                    textObj = obj && obj != null ? obj.toString() : ''
-                }
                 let time = new Time()
                 let t = time.format('${H:m:S}')
+                let message = `[PID - ${process.pid}] ${name}:\n${messageName} - ${t}\n------------------------------MESSAGE------------------------------\n` 
+
+                if(text instanceof Error)
+                    message +=`ERROR NAME: ${text.name}\n----------------------------STACK-TRACE----------------------------\n${text.stack}`
+                else
+                    message += text
+                message += '\n------------------------------OBJECT-------------------------------\n'
+                try {
+                    message += (obj && obj != null ? JSON.stringify(obj,null,'    ') : 'NO OBJECT')
+                } catch (err) {
+                    message = (obj && obj != null ? obj.toString() : 'NO OBJECT')+'\n\n'
+                }
                 if (Logger.isDebug)
-                    console.log(color, `[PID - ${process.pid}] ${name}:\n${messageName} - ${t}\n${(url != '' ? `URL: ${url}\n` : '')}-----------------------------------------------------------------\n${text != '' ? `${text}` : ''}${textObj != '' ? `\nOBJECT:\n${textObj}` : ''}\n`)
+                    console.log(color, message)
                 if (Logger.#logFolder == '' || !Logger.#isInit)
                     return resolve(false)
                 let fileName = `log-${time.format('${D.M.Y}')}.txt`
                 let logFilePath = path.join(Logger.#logFolder, `/${fileName}`).replace(/\\/g, '/')
                 if (!fs.existsSync(logFilePath)) {
-                    fs.writeFile(logFilePath, `[PID - ${process.pid}] ${name}:\n${messageName} - ${t}\n${(url != '' ? `URL: ${url}\n` : '')}-----------------------------------------------------------------\n${text != '' ? `${text}` : ''}${textObj != '' ? `\nOBJECT:\n${textObj}` : ''}\n`, (err) => {
+                    fs.writeFile(logFilePath, message, (err) => {
                         if (err != null) reject(err)
                         resolve(true)
                     })
                 } else {
-                    fs.appendFile(logFilePath, `[PID - ${process.pid}] ${name}:\n${messageName} - ${t}\n${(url != '' ? `URL: ${url}\n` : '')}-----------------------------------------------------------------\n${text != '' ? `${text}` : ''}${textObj != '' ? `\nOBJECT:\n${textObj}` : ''}\n`, (err) => {
+                    fs.appendFile(logFilePath, message, (err) => {
                         if (err != null) reject(err)
                         resolve(true)
                     })
@@ -82,12 +87,10 @@ export default class Logger{
      * Текст сообщения
      * @param {any} obj 
      * Объект данных (необязательно)
-     * @param {string} url 
-     * Адрес входящего запроса (необязательно)
      * @returns 
      */
-    static debug(name,text,obj=null,url=''){
-        return this.#baseDebug(name,text,obj,url,'\x1b[36m%s\x1b[0m', 'DEBUG')
+    static debug(name,text,obj=null){
+        return this.#baseDebug(name,text,obj,'\x1b[36m%s\x1b[0m', 'DEBUG')
     }
 
     /**
@@ -98,12 +101,10 @@ export default class Logger{
      * Текст сообщения
      * @param {any} obj 
      * Объект данных (необязательно)
-     * @param {string} url 
-     * Адрес входящего запроса (необязательно)
      * @returns 
      */
     static warning(name,text,obj=null,url=''){
-        return this.#baseDebug(name,text,obj,url,'\x1b[33m%s\x1b[0m', 'WARNING')
+        return this.#baseDebug(name,text,obj,'\x1b[33m%s\x1b[0m', 'WARNING')
     }
 
     /**
@@ -114,12 +115,10 @@ export default class Logger{
      * Текст сообщения
      * @param {any} obj 
      * Объект данных (необязательно)
-     * @param {string} url 
-     * Адрес входящего запроса (необязательно)
      * @returns 
      */
-    static success(name,text,obj=null,url=''){
-        return this.#baseDebug(name,text,obj,url,'\x1b[32m%s\x1b[0m', 'SUCCESS')
+    static success(name,text,obj=null){
+        return this.#baseDebug(name,text,obj,'\x1b[32m%s\x1b[0m', 'SUCCESS')
     }
 
     /**
@@ -127,44 +126,12 @@ export default class Logger{
      * @param {string} name 
      * Название (функции, модуля, и др. информация) откуда вызывается logger
      * @param {Error} err 
+     * Объект класса Error
+     * @param {any} obj 
      * Объект данных (необязательно)
-     * @param {string} url 
-     * Адрес входящего запроса (необязательно)
      * @returns 
      */
-    static error(name,err,url=''){
-        return new Promise((resolve,reject)=>{
-            try{
-                let time = new Time()
-                let t = time.format('${H:m:S}')
-                if (Logger.isDebug)
-                    console.log('\x1b[31m%s\x1b[0m', `[PID - ${process.pid}] ${name}:\nERROR - ${t} (${err?.name ?? ''})\n${url != '' ? `, URL: ${url}\n` : ''}---------------------------STACK-TRACE---------------------------\n${err?.stack ?? ''}\n-----------------------------------------------------------------\n\n`)
-                if (Logger.#logFolder == '' || !Logger.#isInit)
-                    return resolve(false)
-                let fileName = `log-${time.format('${D.M.Y}')}.txt`
-                let logFilePath = path.join(Logger.#logFolder, `/${fileName}`).replace(/\\/g, '/')
-                if (!fs.existsSync(logFilePath)) {
-                    fs.writeFile(logFilePath, `[PID - ${process.pid}] ${name}:\nERROR - ${t} (${err?.name ?? ''})\n${url != '' ? `, URL: ${url}\n` : ''}---------------------------STACK-TRACE---------------------------\n${err?.stack ?? ''}\n--------------------------------------------------------------\n\n`, (err) => {
-                        if (err != null) reject(err)
-                        resolve(true)
-                    })
-                } else {
-                    fs.appendFile(logFilePath, `[PID - ${process.pid}] ${name}:\nERROR - ${t} (${err?.name ?? ''})\n${url != '' ? `, URL: ${url}\n` : ''}---------------------------STACK-TRACE---------------------------\n${err?.stack ?? ''}\n--------------------------------------------------------------\n\n`, (err) => {
-                        if (err != null) reject(err)
-                        resolve(true)
-                    })
-                } 
-            }catch(err){
-                console.error(err)
-                resolve(false)
-            }
-        })
-    }
-}
-
-export class UrlError extends Error{
-    constructor(message,url){
-        super(message)
-        this.url=url
+    static error(name,err,obj=null){
+        return this.#baseDebug(name,err,obj,'\x1b[31m%s\x1b[0m', 'ERROR')
     }
 }
