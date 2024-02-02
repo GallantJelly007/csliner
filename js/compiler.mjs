@@ -114,7 +114,7 @@ export default class CssCompiler{
         p: { prop: 'padding', unit: this.#units.numeric.REM, priority:67, isSetUnit:true },
         ph: { prop: ['padding-left', 'padding-right'], unit: this.#units.numeric.REM, priority:68, isSetUnit:true },
         pv: { prop: ['padding-top', 'padding-bottom'], unit: this.#units.numeric.REM, priority:69, isSetUnit:true },
-        pt: { prop: 'margin-top', unit: this.#units.numeric.REM, priority:70, isSetUnit:true },
+        pt: { prop: 'padding-top', unit: this.#units.numeric.REM, priority:70, isSetUnit:true },
         pl: { prop: 'padding-left', unit: this.#units.numeric.REM, priority:71, isSetUnit:true },
         pb: { prop: 'padding-bottom', unit: this.#units.numeric.REM, priority:72, isSetUnit:true },
         pr: { prop: 'padding-right', unit: this.#units.numeric.REM, priority:73, isSetUnit:true },
