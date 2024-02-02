@@ -1,7 +1,7 @@
 {
   "name": "cssj",
-  "version": "0.1.0",
-  "description": "fast style sheet",
+  "version": "1.0.0",
+  "description": "CSSJ is a compact library containing the main classes for creating responsive and adaptable web pages. CSS classes are generated from HTML markup depending on the class attribute.",
   "main": "./js/compiler.mjs",
   "exports": "./js/compiler.mjs",
   "type": "module",
@@ -10,8 +10,28 @@
     "build": "node -e \"import('./js/compiler.mjs').then(loaded=>loaded.default.buildCSS())\"",
     "watch": "node -e \"import('./js/compiler.mjs').then(loaded=>loaded.default.buildCSS(true))\""
   },
-  "author": "Alex",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GallantJelly007/cssj.git"
+  },
+  "keywords": [
+    "CSS in JS",
+    "CSS",
+    "JS",
+    "HTML",
+    "fast styles",
+    "Generate CSS"
+  ],
+  "author": {
+    "email": "alariel007@gmail.com",
+    "name": "Alex"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GallantJelly007/cssj/issues",
+    "email": "alariel007@gmail.com"
+  },
+  "homepage": "https://github.com/GallantJelly007/cssj#readme",
   "dependencies": {
     "timelex": "^1.0.1"
   }
