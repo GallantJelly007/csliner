@@ -1,18 +1,16 @@
 {
-  "name": "cssj",
+  "name": "csliner",
   "version": "1.0.0",
-  "description": "CSSJ is a compact library containing the main classes for creating responsive and adaptable web pages. CSS classes are generated from HTML markup depending on the class attribute.",
+  "description": "CSliner is a compact library containing the main classes for creating responsive and adaptable web pages. CSS classes are generated from HTML markup depending on the class attribute.",
   "main": "./js/compiler.mjs",
   "exports": "./js/compiler.mjs",
   "type": "module",
-  "scripts": {
-    "init": "node -e \"import('./js/compiler.mjs').then(loaded=>loaded.default.init())\"",
-    "build": "node -e \"import('./js/compiler.mjs').then(loaded=>loaded.default.buildCSS())\"",
-    "watch": "node -e \"import('./js/compiler.mjs').then(loaded=>loaded.default.buildCSS(true))\""
+  "bin": {
+    "csliner": "./cli.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GallantJelly007/cssj.git"
+    "url": "git+https://github.com/GallantJelly007/csliner.git"
   },
   "keywords": [
     "CSS in JS",
@@ -28,10 +26,10 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/GallantJelly007/cssj/issues",
+    "url": "https://github.com/GallantJelly007/csliner/issues",
     "email": "alariel007@gmail.com"
   },
-  "homepage": "https://github.com/GallantJelly007/cssj#readme",
+  "homepage": "https://github.com/GallantJelly007/csliner#readme",
   "dependencies": {
     "timelex": "^1.0.1"
   }
